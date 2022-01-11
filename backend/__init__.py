@@ -7,7 +7,7 @@ app = Flask(__name__,
             static_folder="../dist/static",
             template_folder="../dist")
 
-app.config.from_object('backend.config.BaseConfig')
+# app.config.from_object('backend.config.BaseConfig')
 
 # from .db_schema import db
 # db.drop_all()
@@ -29,7 +29,7 @@ app.register_blueprint(api, url_prefix="/api")
 cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 
-# 全てのリクエストをReactに投げる。
+# 全てのリクエストをVueに投げる。
 @app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')
 def catch_all(path):

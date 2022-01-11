@@ -1,0 +1,31 @@
+#### ビルド環境 ####
+FROM node:lts-alpine as build-stage
+
+WORKDIR /app
+COPY frontend/package*.json /app/frontend/
+RUN cd /app/frontend && \
+    npm install
+COPY . /app/
+RUN cd /app/frontend && \
+    NODE_OPTIONS=--max_old_space_size=4096 npm run build
+
+# ##### 本番環境 #####
+# FROM nginx:1.13.12-alpine as production-stage
+
+# # contentsを配置するディレクトリを作成する
+# COPY nginx/work/ /home/work
+# RUN mkdir -p /var/log/nginx/log \
+#     && mkdir /home/www \
+#     && mkdir /home/www/contents
+
+# # ビルド環境で構築されたdistディレクトリをnignxの該当のディレクトリに配置する
+# COPY --from=build-stage /app/dist /home/www/contents
+
+# # nginx.confファイルを配置する
+# WORKDIR /home/work
+# RUN rm -f /etc/nginx/conf.d/*.conf\
+#     && rm -f /etc/nginx/nginx.conf\
+#     && cp -i *.conf /etc/nginx
+
+# EXPOSE 80 443
+# CMD ["nginx", "-g", "daemon off;","-c","/etc/nginx/nginx.conf"]
