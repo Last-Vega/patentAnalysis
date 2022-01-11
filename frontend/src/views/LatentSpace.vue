@@ -2,7 +2,7 @@
   <v-app>
     <v-row no-gutters>
       <v-col cols="12" sm="9">
-        <div v-if="this.updateCompanyIndex.length > 0 || this.updateTermIndex.length > 0">
+        <div v-if="this.updateCompany.length > 0 || this.updateTerm.length > 0">
             <div class="text-center">
                 <v-btn color="red lighten-2" dark v-bind="attrs" @click="updateZ">
                   更新する
@@ -53,28 +53,28 @@ export default {
       termName: [],
       termXY: [],
       query: '',
-      updateCompanyIndex: updateCompanyIndex,
-      updateTermIndex: updateTermIndex
+      updateCompany: updateCompanyIndex,
+      updateTerm: updateTermIndex
     }
   },
   methods: {
     async updateZ () {
-      console.log(this.result.latentZ[0])
-      console.log(this.updateIndex)
+      console.log(this.updateComapnyIndex)
+      console.log(this.updateTermIndex)
       const path = process.env.VUE_APP_BASE_URL + 'api/update'
       const postData = {
-        latentZ: this.result.latentZ,
-        updatedCompanyIndex: this.updateCompanyIndex,
-        updateTermIndex: this.updateTermIndex
+        companyZ: this.options.series[0].data,
+        termZ: this.options.series[1].data,
+        CompanyIndex: this.updateCompany,
+        TermIndex: this.updateTerm
       }
       await this.$api
         .post(path, postData)
         .then(response => {
           console.log('post data is ', postData)
-          console.log('updated index is ', postData.updatedIndex)
           console.log(response)
-          this.updateCompanyIndex.splice(0, this.updateCompanyIndex.length)
-          this.updateTermIndex.splice(0, this.updateTermIndex.length)
+          this.updateCompany.splice(0, this.updateCompanyIndex.length)
+          this.updateTerm.splice(0, this.updateTermIndex.length)
         })
         .catch(error => {
           console.log(error)
