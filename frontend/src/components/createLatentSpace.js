@@ -4,13 +4,16 @@ import draggablePoints from 'highcharts/modules/draggable-points'
 
 More(Highcharts)
 draggablePoints(Highcharts)
-var companyTableData = {
+const companyTableData = {
   company: ''
 }
 
-var termTableData = {
+const termTableData = {
   term: ''
 }
+
+const updateCompanyIndex = []
+const updateTermIndex = []
 
 const chartOptions = {
   tooltip: {
@@ -63,6 +66,7 @@ const chartOptions = {
             if (e.newPoint.x !== undefined) {
               chartOptions.series[0].data[index] = [e.newPoint.x, e.newPoint.y]
             }
+            updateCompanyIndex.push(index)
           }
         }
       }
@@ -92,6 +96,7 @@ const chartOptions = {
             if (e.newPoint.x !== undefined) {
               chartOptions.series[1].data[index] = [e.newPoint.x, e.newPoint.y]
             }
+            updateTermIndex.push(index)
           }
         }
       }
@@ -108,4 +113,4 @@ const chartOptions = {
   }
 }
 
-export { companyTableData, termTableData, chartOptions }
+export { companyTableData, termTableData, chartOptions, updateCompanyIndex, updateTermIndex }

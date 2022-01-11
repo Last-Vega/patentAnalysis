@@ -2,6 +2,13 @@
   <v-app>
     <v-row no-gutters>
       <v-col cols="12" sm="9">
+        <div v-if="this.updateCompanyIndex.length > 0 || this.updateTermIndex.length > 0">
+            <div class="text-center">
+                <v-btn color="red lighten-2" dark v-bind="attrs" @click="updateZ">
+                  更新する
+                </v-btn>
+            </div>
+          </div>
         <ViewLatentSpace :options="options" :companyItems="companyItems" :termItems="termItems" />
       </v-col>
       <!-- <v-col cols="12" sm="1"> </v-col> -->
@@ -16,7 +23,9 @@
 import {
   companyTableData,
   termTableData,
-  chartOptions
+  chartOptions,
+  updateCompanyIndex,
+  updateTermIndex
 } from '@/components/createLatentSpace'
 import companyInfo from '@/assets/latentC1223.json'
 import termInfo from '@/assets/latentT1223.json'
@@ -43,10 +52,36 @@ export default {
       companyXY: [],
       termName: [],
       termXY: [],
-      query: ''
+      query: '',
+      updateCompanyIndex: updateCompanyIndex,
+      updateTermIndex: updateTermIndex
     }
   },
-  methods: {},
+  methods: {
+    async updateZ () {
+      console.log(this.result.latentZ[0])
+      console.log(this.updateIndex)
+      const path = process.env.VUE_APP_BASE_URL + 'api/update'
+      const postData = {
+        latentZ: this.result.latentZ,
+        updatedCompanyIndex: this.updateCompanyIndex,
+        updateTermIndex: this.updateTermIndex
+      }
+      await this.$api
+        .post(path, postData)
+        .then(response => {
+          console.log('post data is ', postData)
+          console.log('updated index is ', postData.updatedIndex)
+          console.log(response)
+          this.updateCompanyIndex.splice(0, this.updateCompanyIndex.length)
+          this.updateTermIndex.splice(0, this.updateTermIndex.length)
+        })
+        .catch(error => {
+          console.log(error)
+        })
+      this.makeScatter()
+    }
+  },
   created () {
     const companyData = companyInfo.key
     const termData = termInfo.key
