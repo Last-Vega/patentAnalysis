@@ -4,11 +4,11 @@ import numpy as np
 from scipy.sparse import csr_matrix, lil_matrix
 import torch
 import torch.nn.functional as F
-from args import *
+from .args import *
 import os
-from util import fix_seed, prepare_adj_for_training, prepare_features_for_training, feedbacked_model_init
+from .util import fix_seed, prepare_adj_for_training, prepare_features_for_training, feedbacked_model_init
 
-#乱数のシード値
+fix_seed(42)
 def createSampleGraph():
     seed = 42
     n = 100
@@ -83,7 +83,6 @@ def train(latentC, latentT):
 
     bi_weight_tensor, bi_adj_norm, bi_norm, bi_adj_label, bi_adj_orig, bi_test_edges, bi_test_edges_false = prepare_adj_for_training(bi_adj)
     bipartite_dim = bi_adj.shape[1]
-
 
     model, optimizer = feedbacked_model_init(adj_norm, graph_dim, bipartite_dim)
 
