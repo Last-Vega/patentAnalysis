@@ -4,7 +4,7 @@
       <v-col cols="12" sm="9">
         <div v-if="this.updateCompany.length > 0 || this.updateTerm.length > 0">
             <div class="text-center">
-                <v-btn color="red lighten-2" dark v-bind="attrs" @click="updateZ">
+                <v-btn color="red lighten-2" dark @click="updateZ">
                   更新する
                 </v-btn>
             </div>
@@ -59,8 +59,8 @@ export default {
   },
   methods: {
     async updateZ () {
-      console.log(this.updateComapnyIndex)
-      console.log(this.updateTermIndex)
+      console.log(this.updateComapny)
+      console.log(this.updateTerm)
       const path = process.env.VUE_APP_BASE_URL + 'api/update'
       const postData = {
         companyZ: this.options.series[0].data,
@@ -79,7 +79,6 @@ export default {
         .catch(error => {
           console.log(error)
         })
-      this.makeScatter()
     }
   },
   created () {
