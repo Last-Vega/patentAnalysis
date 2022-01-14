@@ -57,7 +57,6 @@ class Recommendation(nn.Module):
 		self.siguma = torch.exp(self.mu)
 		gaussian_noise = torch.randn(bi_networks.size(0), args.hidden2_dim)
 		z = gaussian_noise*self.siguma + self.mu
-		# z = mu
 		self.Z_t = z
 		return z
 
@@ -68,6 +67,51 @@ class Recommendation(nn.Module):
 		Z_t = self.encoder_with_MLP(bi_networks)
 		bi_network_pred = bipartite_decode(Z_c, Z_t, self.a, self.b)
 		return A_pred, bi_network_pred
+
+class RecommendViaFeedback(nn.Module):
+	def __init__(self, adj, graph_dim, bipartite_dim):
+		super(Recommendation, self).__init__()
+		self.base_gcn = GraphConvSparse(graph_dim, args.hidden1_dim, adj)
+		self.gcn_mean = GraphConvSparse(args.hidden1_dim, args.hidden2_dim, adj, activation=lambda x:x)
+		self.gcn_logstddev = GraphConvSparse(args.hidden1_dim, args.hidden2_dim, adj, activation=lambda x:x)
+		self.l1 = nn.Linear(bipartite_dim, args.hidden1_dim)
+		self.l2 = nn.Linear(args.hidden1_dim, args.hidden2_dim)
+		self.weight = glorot_init(bipartite_dim, args.hidden2_dim)
+		self.a = Parameter(torch.FloatTensor(1))
+		self.b = Parameter(torch.FloatTensor(1))
+		nn.init.constant_(self.a, 3)
+		nn.init.constant_(self.b, 5)
+	
+	def encode(self, X, latentC):
+		hidden = self.base_gcn(X)
+		self.mean = self.gcn_mean(hidden)
+		self.logstd = self.gcn_logstddev(hidden)
+		gaussian_noise = torch.randn(X.size(0), args.hidden2_dim)
+		sampled_z = gaussian_noise*torch.exp(self.logstd) + self.mean
+		sampled_z = latentC
+		z = sampled_z
+		self.Z_c = z
+		return z
+	
+	def encoder_with_MLP(self, bi_networks, latentT):
+		h1 = self.l1(bi_networks)
+		h2 = torch.sigmoid(h1)
+		h3 = self.l2(h2)
+		self.mu = F.relu(self.weight*h3)
+		self.siguma = torch.exp(self.mu)
+		gaussian_noise = torch.randn(bi_networks.size(0), args.hidden2_dim)
+		z = gaussian_noise*self.siguma + self.mu
+		z = latentT
+		self.Z_t = z
+		return z
+	
+	def forward(self, X, bi_networks, latentC, latentT):
+		Z_c = self.encode(X, latentC)
+		A_pred = norm_distance_decode(Z_c, self.a, self.b)
+		Z_t = self.encoder_with_MLP(bi_networks, latentT)
+		bi_network_pred = bipartite_decode(Z_c, Z_t, self.a, self.b)
+		return A_pred, bi_network_pred
+
 
 def norm_distance_decode(Z, a, b):
 	eps = 0.00001
