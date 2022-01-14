@@ -89,10 +89,6 @@ def train(latentC, latentT):
     for epoch in range(num_epoch):
         A_pred, Bi_pred = model(features, bi_adj_norm, latentC, latentT)
         optimizer.zero_grad()
-        # print(A_pred.shape)
-        # print(adj_label.shape)
-        # print(Bi_pred.shape)
-        # print(bi_adj_label.shape)
         loss = norm*F.binary_cross_entropy(A_pred.view(-1), adj_label.to_dense().view(-1), weight = weight_tensor) + bi_norm*F.binary_cross_entropy(Bi_pred.view(-1), bi_adj_label.to_dense().view(-1), weight = bi_weight_tensor)
         kl_divergence1 = 0.5/ A_pred.size(0) * (1 + 2*model.logstd - model.mean**2 - torch.exp(model.logstd)**2).sum(1).mean()
         kl_divergence2 = 0.5/ Bi_pred.size(0) * (1 + 2*model.siguma - model.mu**2 - model.siguma**2).sum(1).mean()
