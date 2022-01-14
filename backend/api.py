@@ -20,12 +20,18 @@ def hogePost():
 def update():
     latent_c = request.get_json()['companyZ']
     latent_t = request.get_json()['termZ']
-    print(len(latent_c))
-    print(len(latent_t))
-    tensor_latentC = torch.tensor(latent_c, requires_grad=True, dtype=float)
-    tensor_latentT = torch.tensor(latent_t, requires_grad=True, dtype=float)
-    Z = train(tensor_latentC, tensor_latentT)
-    Z_c = Z[:100]
-    Z_t = Z[100:]
+    connected = []
+    connected += latent_c
+    connected += latent_t
+
+    tensor_latentC = torch.tensor(latent_c, requires_grad=True, dtype=torch.float32)
+    tensor_latentT = torch.tensor(connected, requires_grad=True, dtype=torch.float32)
+
+    Z_c, Z_t = train(tensor_latentC, tensor_latentT)
+    # Z_c = Z[:100]
+    # Z_t = Z[100:]
+    # print(Z_c[0])
     result = {'company': Z_c, 'term': Z_t}
+    result = jsonify(result)
+    # result = {'company': latent_c}
     return result

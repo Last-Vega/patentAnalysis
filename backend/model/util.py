@@ -7,10 +7,10 @@ from sklearn.metrics import roc_auc_score, average_precision_score
 import scipy.sparse as sp
 import numpy as np
 
-from preprocessing import *
+from .preprocessing import *
 
-from args import *
-from model import Recommendation, RecommendViaFeedback
+from .args import *
+from .model import Recommendation, RecommendViaFeedback
 
 # 乱数シード固定（再現性の担保）
 def fix_seed(seed):

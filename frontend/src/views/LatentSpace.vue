@@ -58,6 +58,13 @@ export default {
     }
   },
   methods: {
+    makeScatter (company, term) {
+      console.log(company)
+      this.companyXY = company
+      this.termXY = term
+      this.options.series[0].data = company
+      this.options.series[1].data = term
+    },
     async updateZ () {
       console.log(this.updateComapny)
       console.log(this.updateTerm)
@@ -71,10 +78,10 @@ export default {
       await this.$api
         .post(path, postData)
         .then(response => {
-          console.log('post data is ', postData)
-          console.log(response)
-          this.updateCompany.splice(0, this.updateCompanyIndex.length)
-          this.updateTerm.splice(0, this.updateTermIndex.length)
+          this.updateCompany.splice(0, this.updateCompany.length)
+          this.updateTerm.splice(0, this.updateTerm.length)
+          console.log(response.data.company)
+          this.makeScatter(response.data.company, response.data.term)
         })
         .catch(error => {
           console.log(error)
@@ -92,6 +99,7 @@ export default {
       this.termName.push(termData[i].term)
       this.termXY.push([termData[i].x, termData[i].y])
     }
+    console.log(this.companyXY)
     this.options.series[0].dataLabal = this.companyName
     this.options.series[0].data = this.companyXY
     this.options.series[1].dataLabal = this.termName

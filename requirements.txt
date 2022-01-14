@@ -19,3 +19,4 @@ scipy
 Janome==0.4.1
 scikit-learn==0.23.2
 nltk==3.5
+matplotlib==3.4.2
