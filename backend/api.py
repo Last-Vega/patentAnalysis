@@ -1,4 +1,6 @@
 from flask import Blueprint, jsonify, request
+import torch
+from .model.re_train import train
 # coding: utf-8
 
 api = Blueprint('api', __name__)
@@ -18,5 +20,12 @@ def hogePost():
 def update():
     latent_c = request.get_json()['companyZ']
     latent_t = request.get_json()['termZ']
-    result = {'company': latent_c}
+    print(len(latent_c))
+    print(len(latent_t))
+    tensor_latentC = torch.tensor(latent_c, requires_grad=True, dtype=float)
+    tensor_latentT = torch.tensor(latent_t, requires_grad=True, dtype=float)
+    Z = train(tensor_latentC, tensor_latentT)
+    Z_c = Z[:100]
+    Z_t = Z[100:]
+    result = {'company': Z_c, 'term': Z_t}
     return result
