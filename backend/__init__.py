@@ -7,7 +7,7 @@ app = Flask(__name__,
             static_folder="../dist/static",
             template_folder="../dist")
 
-# app.config.from_object('backend.config.BaseConfig')
+app.config.from_object('backend.config.BaseConfig')
 
 # from .db_schema import db
 # db.drop_all()
