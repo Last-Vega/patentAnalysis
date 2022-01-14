@@ -75,6 +75,10 @@ export default {
           console.log(response)
           this.updateCompany.splice(0, this.updateCompanyIndex.length)
           this.updateTerm.splice(0, this.updateTermIndex.length)
+          this.companyXY = response.data.company
+          this.termXY = response.data.term
+          this.options.series[0].data = this.companyXY
+          this.options.series[1].data = this.termXY
         })
         .catch(error => {
           console.log(error)
