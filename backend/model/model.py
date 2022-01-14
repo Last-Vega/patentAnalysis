@@ -105,6 +105,23 @@ class RecommendViaFeedback(nn.Module):
 		self.Z_t = z
 		return z
 	
+	def prediction(self, X, bi_networks):
+		hidden = self.base_gcn(X)
+		self.mean = self.gcn_mean(hidden)
+		self.logstd = self.gcn_logstddev(hidden)
+		gaussian_noise = torch.randn(X.size(0), hidden2_dim)
+		z_c = gaussian_noise*torch.exp(self.logstd) + self.mean
+
+		h1 = self.l1(bi_networks)
+		h2 = torch.sigmoid(h1)
+		h3 = self.l2(h2)
+		self.mu = F.relu(self.weight*h3)
+		self.siguma = torch.exp(self.mu)
+		gaussian_noise = torch.randn(bi_networks.size(0), hidden2_dim)
+		z_t = gaussian_noise*self.siguma + self.mu
+		Z = z_t
+		return Z
+	
 	def forward(self, X, bi_networks, latentC, latentT):
 		Z_c = self.encode(X, latentC)
 		A_pred = norm_distance_decode(Z_c, self.a, self.b)
@@ -128,6 +145,7 @@ def bipartite_decode(Z_c, Z_t, a, b):
 
 	for itr in range(len(Z_c)):
 		Z_c_[itr] = Z_c[itr]
+	
 	z_dist = torch.cdist(Z_c_, Z_t, p=2) # norm distance
 	x = 1/(z_dist + eps)
 	bi_network_pred = torch.sigmoid((x/a)-b)
