@@ -10,7 +10,7 @@ import numpy as np
 from preprocessing import *
 
 from args import *
-from model import Recommendation
+from model import Recommendation, RecommendViaFeedback
 
 # 乱数シード固定（再現性の担保）
 def fix_seed(seed):
@@ -65,5 +65,10 @@ def prepare_features_for_training(features:lil_matrix):
 
 def model_init(adj_norm, graph_dim, bipartite_dim):
     model = Recommendation(adj_norm, graph_dim, bipartite_dim)
+    optimizer = Adam(model.parameters(), lr=learning_rate)
+    return model, optimizer
+
+def feedbacked_model_init(adj_norm, graph_dim, bipartite_dim):
+    model = RecommendViaFeedback(adj_norm, graph_dim, bipartite_dim)
     optimizer = Adam(model.parameters(), lr=learning_rate)
     return model, optimizer
