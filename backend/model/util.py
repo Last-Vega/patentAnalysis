@@ -72,3 +72,66 @@ def feedbacked_model_init(adj_norm, graph_dim, bipartite_dim):
     model = RecommendViaFeedback(adj_norm, graph_dim, bipartite_dim)
     optimizer = Adam(model.parameters(), lr=learning_rate)
     return model, optimizer
+
+def calc_log_likelihood(adj, pred):
+    adj_pt = torch.from_numpy(adj).clone().to(torch.float32)
+    log_likelihood = torch.matmul(adj_pt, torch.log(pred))
+    log_likelihood = torch.sum(log_likelihood)
+    return log_likelihood
+
+def calc_metapath_weight(contribution_rate):
+    weight_list = []
+    rate_sum = sum(contribution_rate)
+    for elm in contribution_rate:
+        weight = elm/rate_sum
+        weight_list.append(weight)
+    return weight_list
+
+def feedback(adj_dict, update_index_list, G, bib_database, neighborhood_dict, metapath_list, argument):
+    adj_dict['nothing'] = np.zeros((50, 50))
+    for update_index in update_index_list:
+        update_dict = {update_index: neighborhood_dict[update_index]}
+        # adj_dict = reccomend_criteria(G, update_dict, adj_dict, bib_database, metapath_list, argument)
+    
+    return adj_dict
+
+def e_step(adj_dict, pred):
+    contribution_rate = []
+    for key, original_adj in adj_dict.items():
+        log_liklihood = calc_log_likelihood(original_adj, pred)
+        contribution_rate.append(log_liklihood)
+
+    weight_list = calc_metapath_weight(contribution_rate)
+    print(weight_list)
+    weighted_adj = torch.zeros((50,50))
+    for weight, original_adj in zip(weight_list, adj_dict.values()):
+        original_adj = torch.from_numpy(original_adj).clone().to(torch.float32)
+        weighted_adj += weight * original_adj
+    weighted_adj = torch.nan_to_num(weighted_adj)
+    weighted_adj = weighted_adj.to('cpu').detach().numpy().copy()
+    weighted_adj = sp.csr_matrix(weighted_adj)
+    return weighted_adj, weight_list
+
+def m_step(model, optimizer, weighted_adj, features, modelType):
+    weight_tensor, adj_norm, norm, adj_label, adj_orig, test_edges, test_edges_false = prepare_adj_for_training(weighted_adj)
+    
+    model, optimizer = model_init(adj_norm, features.shape[1], modelType)
+    model.train()
+    for epoch in range(num_epoch):
+        A_pred = model(features)
+        optimizer.zero_grad()
+        loss = norm*F.binary_cross_entropy(A_pred.view(-1), adj_label.to_dense().view(-1), weight=weight_tensor)
+        print(loss)
+        loss.backward()
+        optimizer.step()
+
+    model.eval()
+   
+    z = model.z
+    z = z.to('cpu').detach().numpy().copy().tolist()
+
+    return z, model, optimizer
+
+def criteria(g, update_dict, adj_dict, bib_database, metapath_list, argument):
+    
+    return adj_dict
