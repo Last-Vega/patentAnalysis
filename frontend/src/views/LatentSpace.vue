@@ -1,5 +1,6 @@
 <template>
   <v-app>
+    <Loading :flag="isShow" />
     <v-row no-gutters>
       <v-col cols="12" sm="9">
         <div v-if="this.updateCompany.length > 0 || this.updateTerm.length > 0">
@@ -31,11 +32,13 @@ import companyInfo from '@/assets/latentC1223.json'
 import termInfo from '@/assets/latentT1223.json'
 import ViewTabel from '@/components/viewTable'
 import ViewLatentSpace from '@/components/viewLatentInfo'
+import Loading from '@/components/Loading'
 export default {
   name: 'LatentSpace',
   components: {
     ViewTabel,
-    ViewLatentSpace
+    ViewLatentSpace,
+    Loading
   },
   data () {
     return {
@@ -54,7 +57,8 @@ export default {
       termXY: [],
       query: '',
       updateCompany: updateCompanyIndex,
-      updateTerm: updateTermIndex
+      updateTerm: updateTermIndex,
+      isShow: false
     }
   },
   methods: {
@@ -66,6 +70,7 @@ export default {
       this.options.series[1].data = term
     },
     async updateZ () {
+      this.isShow = true
       console.log(this.updateComapny)
       console.log(this.updateTerm)
       const path = process.env.VUE_APP_BASE_URL + 'api/update'
@@ -82,9 +87,11 @@ export default {
           this.updateTerm.splice(0, this.updateTerm.length)
           console.log(response.data.company)
           this.makeScatter(response.data.company, response.data.term)
+          this.isShow = false
         })
         .catch(error => {
           console.log(error)
+          this.isShow = false
         })
     }
   },
