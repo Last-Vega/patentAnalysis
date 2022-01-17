@@ -100,7 +100,29 @@ def train(latentC, latentT):
 
     # Z = model.Z_t.to('cpu').detach().numpy().copy().tolist()
     # z_c, z_t = model.prediction(features, bi_adj_norm)
+
     Z = model.prediction(features, bi_adj_norm).to('cpu').detach().numpy().copy().tolist()
     Z_c = Z[:100]
     Z_t = Z[100:]
     return Z_c, Z_t
+
+
+    """
+    W = torch.rand(len(metapath_list))
+
+    weighted_adj = torch.zeros((50,50))
+
+    for adj_elm, w in zip(adj_dict.values(), W):
+        adj_elm = torch.from_numpy(adj_elm).clone().to(torch.float32)
+        weighted_adj += w * adj_elm
+    
+    weighted_adj = csr_matrix(weighted_adj)
+
+    weight_tensor, adj_norm, norm, adj_label, adj_orig, test_edges, test_edges_false = prepare_adj_for_training(weighted_adj)
+    model, optimizer = feedbacked_model_init(adj_norm, graph_dim, bipartite_dim)
+    for e in range(10):
+        A_pred = model(features)
+        weighted_adj, weight_list = e_step(adj_dict, A_pred)
+        z, model, optimizer = m_step(model, optimizer, weighted_adj, features, args.modelType)
+        adj_dict = check_distance(z, adj_dict, neighborhood_dict)
+    """
