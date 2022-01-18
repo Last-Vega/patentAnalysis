@@ -7,17 +7,6 @@ from .util import calcCCDistance, calcCTDistance, calcTTDistance, appendElm
 
 api = Blueprint('api', __name__)
 
-
-@api.route('/hoge/<string:str>', methods=["GET"])
-def hogeGet(str):
-    return "hogeGet: " + str
-
-
-@api.route("/hoge", methods=["POST"])
-def hogePost():
-    text = request.form["text"]
-    return "hogePost: " + text
-
 @api.route('/update', methods=['POST'])
 def update():
     latent_c = request.get_json()['companyZ']
@@ -30,12 +19,9 @@ def update():
     tensor_latentT = torch.tensor(connected, requires_grad=True, dtype=torch.float32)
 
     Z_c, Z_t = train(tensor_latentC, tensor_latentT)
-    # Z_c = Z[:100]
-    # Z_t = Z[100:]
-    # print(Z_c[0])
+
     result = {'company': Z_c, 'term': Z_t}
     result = jsonify(result)
-    # result = {'company': latent_c}
     return result
 
 @api.route('/search', methods=['POST'])
@@ -71,7 +57,6 @@ def search():
         close_company = appendElm(close_company_index, company_name)
         close_term = appendElm(close_term_index, term)
 
-    print(close_company)
     result = {'showFlag': True, 'closeComapny': close_company, 'closeTerm': close_term}
     result = jsonify(result)
     return result

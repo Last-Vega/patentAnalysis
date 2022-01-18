@@ -176,7 +176,6 @@ export default {
         term: this.termName,
         query: this.query
       }
-      console.log(this.companyName)
       await this.$api
         .post(path, postData)
         .then(response => {
