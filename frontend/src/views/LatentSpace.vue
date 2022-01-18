@@ -22,7 +22,7 @@
             推薦結果を見る
           </v-btn>
         </div>
-        <ViewTabel :companyName="companyName" :termName="termName" />
+        <ViewTabel :companyName="companyName" :termName="termName" :companyZ="this.options.series[0].data" :termZ="this.options.series[1].data" />
       </v-col>
     </v-row>
   </v-app>

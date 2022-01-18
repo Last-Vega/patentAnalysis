@@ -93,6 +93,14 @@ export default {
     termName: {
       type: Array,
       required: true
+    },
+    companyZ: {
+      type: Array,
+      required: true
+    },
+    termZ: {
+      type: Array,
+      required: true
     }
   },
   data () {
@@ -108,56 +116,83 @@ export default {
     }
   },
   methods: {
-    submit () {
-      this.closeCompany = []
-      this.closeTerm = []
-      let filterIndex = -1
-      let flag = -1
-      if (this.companyName.includes(this.query)) {
-        filterIndex = this.companyName.indexOf(this.query)
-        flag = 0
-      } else if (this.termName.includes(this.query)) {
-        filterIndex = this.termName.indexOf(this.query)
-        flag = 1
-      } else {
-        filterIndex = -1
-        flag = -1
-        this.showFlag = false
+    // submit () {
+    //   this.closeCompany = []
+    //   this.closeTerm = []
+    //   let filterIndex = -1
+    //   let flag = -1
+    //   if (this.companyName.includes(this.query)) {
+    //     filterIndex = this.companyName.indexOf(this.query)
+    //     flag = 0
+    //   } else if (this.termName.includes(this.query)) {
+    //     filterIndex = this.termName.indexOf(this.query)
+    //     flag = 1
+    //   } else {
+    //     filterIndex = -1
+    //     flag = -1
+    //     this.showFlag = false
+    //   }
+    //   if (filterIndex !== -1) {
+    //     this.showFlag = true
+    //     if (flag === 0) {
+    //       this.queryX = this.companyInfo[filterIndex].x
+    //       this.queryY = this.companyInfo[filterIndex].y
+    //       this.calcCompanyDistance(filterIndex, this.companyInfo[filterIndex].x, this.companyInfo[filterIndex].y, false)
+    //       this.calcTermDistance(filterIndex, this.companyInfo[filterIndex].x, this.companyInfo[filterIndex].y, true)
+    //     } else if (flag === 1) {
+    //       this.queryX = this.termInfo[filterIndex].x
+    //       this.queryY = this.termInfo[filterIndex].y
+    //       this.calcCompanyDistance(filterIndex, this.termInfo[filterIndex].x, this.termInfo[filterIndex].y, true)
+    //       this.calcTermDistance(filterIndex, this.companyInfo[filterIndex].x, this.companyInfo[filterIndex].y, false)
+    //     }
+    //   }
+    // },
+    // calcCompanyDistance (index, x, y, flag) {
+    //   const distanceList = []
+    //   this.companyInfo.forEach((value) => {
+    //     const tempObj = {}
+    //     const distance = Math.sqrt((value.x - x) ** 2 + (value.y - y) ** 2)
+    //     tempObj.key = value.company
+    //     tempObj.value = distance
+    //     distanceList.push(tempObj)
+    //   })
+    //   distanceList.sort((a, b) => a.value - b.value)
+    //   if (flag === true) {
+    //     for (let i = 0; i < 5; i++) {
+    //       this.closeCompany.push(distanceList[i].key)
+    //     }
+    //   } else {
+    //     for (let i = 1; i < 6; i++) {
+    //       this.closeCompany.push(distanceList[i].key)
+    //     }
+    //   }
+    // },
+    async submit () {
+      const path = process.env.VUE_APP_BASE_URL + 'api/search'
+      const postData = {
+        companyZ: this.companyZ,
+        termZ: this.termZ,
+        company: this.companyName,
+        term: this.termName,
+        query: this.query
       }
-      if (filterIndex !== -1) {
-        this.showFlag = true
-        if (flag === 0) {
-          this.queryX = this.companyInfo[filterIndex].x
-          this.queryY = this.companyInfo[filterIndex].y
-          this.calcCompanyDistance(filterIndex, this.companyInfo[filterIndex].x, this.companyInfo[filterIndex].y, false)
-          this.calcTermDistance(filterIndex, this.companyInfo[filterIndex].x, this.companyInfo[filterIndex].y, true)
-        } else if (flag === 1) {
-          this.queryX = this.termInfo[filterIndex].x
-          this.queryY = this.termInfo[filterIndex].y
-          this.calcCompanyDistance(filterIndex, this.termInfo[filterIndex].x, this.termInfo[filterIndex].y, true)
-          this.calcTermDistance(filterIndex, this.companyInfo[filterIndex].x, this.companyInfo[filterIndex].y, false)
-        }
-      }
-    },
-    calcCompanyDistance (index, x, y, flag) {
-      const distanceList = []
-      this.companyInfo.forEach((value) => {
-        const tempObj = {}
-        const distance = Math.sqrt((value.x - x) ** 2 + (value.y - y) ** 2)
-        tempObj.key = value.company
-        tempObj.value = distance
-        distanceList.push(tempObj)
-      })
-      distanceList.sort((a, b) => a.value - b.value)
-      if (flag === true) {
-        for (let i = 0; i < 5; i++) {
-          this.closeCompany.push(distanceList[i].key)
-        }
-      } else {
-        for (let i = 1; i < 6; i++) {
-          this.closeCompany.push(distanceList[i].key)
-        }
-      }
+      console.log(this.companyName)
+      await this.$api
+        .post(path, postData)
+        .then(response => {
+          this.closeCompany.splice(0, this.closeCompany.length)
+          this.closeTerm.splice(0, this.closeTerm.length)
+          if (response.data.showFlag === false) {
+            alert(response.data.message)
+          } else {
+            this.showFlag = true
+            this.closeCompany = response.data.closeComapny
+            this.closeTerm = response.data.closeTerm
+          }
+        })
+        .catch(error => {
+          console.log(error)
+        })
     },
     calcTermDistance (index, x, y, flag) {
       const distanceList = []
