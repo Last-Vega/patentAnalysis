@@ -14,7 +14,15 @@
       </v-col>
       <!-- <v-col cols="12" sm="1"> </v-col> -->
       <v-col cols="12" sm="3">
-        <ViewTabel :companyName="companyName" :termName="termName" />
+        <div class="text-center">
+          <v-btn color="lighten-2" dark >
+            位置を検索する
+          </v-btn>
+          <v-btn color="lighten-2" dark >
+            推薦結果を見る
+          </v-btn>
+        </div>
+        <ViewTabel :companyName="companyName" :termName="termName" :companyZ="this.options.series[0].data" :termZ="this.options.series[1].data" />
       </v-col>
     </v-row>
   </v-app>

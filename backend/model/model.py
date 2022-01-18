@@ -35,8 +35,8 @@ class Recommendation(nn.Module):
 		self.weight = glorot_init(bipartite_dim, hidden2_dim)
 		self.a = Parameter(torch.FloatTensor(1))
 		self.b = Parameter(torch.FloatTensor(1))
-		nn.init.constant_(self.a, 3)
-		nn.init.constant_(self.b, 5)
+		nn.init.constant_(self.a, 0.8)
+		nn.init.constant_(self.b, -7)
 	
 	def encode(self, X):
 		hidden = self.base_gcn(X)
@@ -79,8 +79,8 @@ class RecommendViaFeedback(nn.Module):
 		self.weight = glorot_init(bipartite_dim, hidden2_dim)
 		self.a = Parameter(torch.FloatTensor(1))
 		self.b = Parameter(torch.FloatTensor(1))
-		nn.init.constant_(self.a, 3)
-		nn.init.constant_(self.b, 5)
+		nn.init.constant_(self.a, 0.8)
+		nn.init.constant_(self.b, 8)
 	
 	def encode(self, X, latentC):
 		hidden = self.base_gcn(X)
