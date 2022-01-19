@@ -19,10 +19,8 @@ class GraphConvSparse(nn.Module):
 		x = inputs
 		x = torch.mm(x,self.weight)
 		x = torch.mm(self.adj, x)
-		# x = self.dropout(x)
 		outputs = self.activation(x)
-		# return outputs
-		return x
+		return outputs
 
 class Recommendation(nn.Module):
 	def __init__(self, adj, graph_dim, bipartite_dim):
@@ -36,7 +34,7 @@ class Recommendation(nn.Module):
 		self.a = Parameter(torch.FloatTensor(1))
 		self.b = Parameter(torch.FloatTensor(1))
 		nn.init.constant_(self.a, 0.8)
-		nn.init.constant_(self.b, -7)
+		nn.init.constant_(self.b, 7)
 	
 	def encode(self, X):
 		hidden = self.base_gcn(X)
@@ -80,7 +78,7 @@ class RecommendViaFeedback(nn.Module):
 		self.a = Parameter(torch.FloatTensor(1))
 		self.b = Parameter(torch.FloatTensor(1))
 		nn.init.constant_(self.a, 0.8)
-		nn.init.constant_(self.b, 8)
+		nn.init.constant_(self.b, 7)
 	
 	def encode(self, X, latentC):
 		hidden = self.base_gcn(X)
