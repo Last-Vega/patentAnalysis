@@ -80,9 +80,6 @@
 </template>
 
 <script>
-import companyInfo from '@/assets/latentC1223.json'
-import termInfo from '@/assets/latentT1223.json'
-
 export default {
   name: 'ViewTabel',
   props: {
@@ -215,8 +212,6 @@ export default {
     }
   },
   created () {
-    this.companyInfo = companyInfo.key
-    this.termInfo = termInfo.key
   }
 }
 </script>
