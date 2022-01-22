@@ -36,8 +36,12 @@ import {
   updateCompanyIndex,
   updateTermIndex
 } from '@/components/createLatentSpace'
-import companyInfo from '@/assets/latentC1223.json'
-import termInfo from '@/assets/latentT1223.json'
+// import companyInfo from '@/assets/latentC1223.json'
+// import termInfo from '@/assets/latentT1223.json'
+// import companyInfo from '@/assets/latentC0119.json'
+// import termInfo from '@/assets/latentT0119.json'
+import companyInfo from '@/assets/SwitchedlatentC0119.json'
+import termInfo from '@/assets/SwitchedlatentT0119.json'
 import ViewTabel from '@/components/viewTable'
 import ViewLatentSpace from '@/components/viewLatentInfo'
 import Loading from '@/components/Loading'

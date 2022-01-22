@@ -80,9 +80,6 @@
 </template>
 
 <script>
-import companyInfo from '@/assets/latentC1223.json'
-import termInfo from '@/assets/latentT1223.json'
-
 export default {
   name: 'ViewTabel',
   props: {
@@ -176,7 +173,6 @@ export default {
         term: this.termName,
         query: this.query
       }
-      console.log(this.companyName)
       await this.$api
         .post(path, postData)
         .then(response => {
@@ -188,6 +184,8 @@ export default {
             this.showFlag = true
             this.closeCompany = response.data.closeComapny
             this.closeTerm = response.data.closeTerm
+            this.queryX = response.data.XY[0]
+            this.queryY = response.data.XY[1]
           }
         })
         .catch(error => {
@@ -216,8 +214,6 @@ export default {
     }
   },
   created () {
-    this.companyInfo = companyInfo.key
-    this.termInfo = termInfo.key
   }
 }
 </script>

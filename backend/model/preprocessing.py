@@ -59,40 +59,40 @@ def mask_test_edges(adj):
         return np.any(rows_close)
 
     test_edges_false = []
-    while len(test_edges_false) < len(test_edges):
-        idx_i = np.random.randint(0, adj.shape[0])
-        idx_j = np.random.randint(0, adj.shape[0])
-        if idx_i == idx_j:
-            continue
-        if ismember([idx_i, idx_j], edges_all):
-            continue
-        if test_edges_false:
-            if ismember([idx_j, idx_i], np.array(test_edges_false)):
-                continue
-            if ismember([idx_i, idx_j], np.array(test_edges_false)):
-                continue
-        test_edges_false.append([idx_i, idx_j])
+    # while len(test_edges_false) < len(test_edges):
+    #     idx_i = np.random.randint(0, adj.shape[0])
+    #     idx_j = np.random.randint(0, adj.shape[0])
+    #     if idx_i == idx_j:
+    #         continue
+    #     if ismember([idx_i, idx_j], edges_all):
+    #         continue
+    #     if test_edges_false:
+    #         if ismember([idx_j, idx_i], np.array(test_edges_false)):
+    #             continue
+    #         if ismember([idx_i, idx_j], np.array(test_edges_false)):
+    #             continue
+    #     test_edges_false.append([idx_i, idx_j])
 
     val_edges_false = []
-    while len(val_edges_false) < len(val_edges):
-        idx_i = np.random.randint(0, adj.shape[0])
-        idx_j = np.random.randint(0, adj.shape[0])
-        if idx_i == idx_j:
-            continue
-        if ismember([idx_i, idx_j], train_edges):
-            continue
-        if ismember([idx_j, idx_i], train_edges):
-            continue
-        if ismember([idx_i, idx_j], val_edges):
-            continue
-        if ismember([idx_j, idx_i], val_edges):
-            continue
-        if val_edges_false:
-            if ismember([idx_j, idx_i], np.array(val_edges_false)):
-                continue
-            if ismember([idx_i, idx_j], np.array(val_edges_false)):
-                continue
-        val_edges_false.append([idx_i, idx_j])
+    # while len(val_edges_false) < len(val_edges):
+    #     idx_i = np.random.randint(0, adj.shape[0])
+    #     idx_j = np.random.randint(0, adj.shape[0])
+    #     if idx_i == idx_j:
+    #         continue
+    #     if ismember([idx_i, idx_j], train_edges):
+    #         continue
+    #     if ismember([idx_j, idx_i], train_edges):
+    #         continue
+    #     if ismember([idx_i, idx_j], val_edges):
+    #         continue
+    #     if ismember([idx_j, idx_i], val_edges):
+    #         continue
+    #     if val_edges_false:
+    #         if ismember([idx_j, idx_i], np.array(val_edges_false)):
+    #             continue
+    #         if ismember([idx_i, idx_j], np.array(val_edges_false)):
+    #             continue
+    #     val_edges_false.append([idx_i, idx_j])
 
     # assert ~ismember(test_edges_false, edges_all)
     # assert ~ismember(val_edges_false, edges_all)
