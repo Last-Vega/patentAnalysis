@@ -97,13 +97,16 @@ def feedback(adj_dict, update_index_list, G, bib_database, neighborhood_dict, me
 
 def e_step(adj_dict, pred):
     contribution_rate = []
+    size = 0
     for key, original_adj in adj_dict.items():
         log_liklihood = calc_log_likelihood(original_adj, pred)
         contribution_rate.append(log_liklihood)
+        size = original_adj.shape
 
     weight_list = calc_metapath_weight(contribution_rate)
     print(weight_list)
-    weighted_adj = torch.zeros((50,50))
+    # weighted_adj = torch.zeros((50,50))
+    weighted_adj = torch.zeros((size[0],size[1]))
     for weight, original_adj in zip(weight_list, adj_dict.values()):
         original_adj = torch.from_numpy(original_adj).clone().to(torch.float32)
         weighted_adj += weight * original_adj
@@ -112,25 +115,35 @@ def e_step(adj_dict, pred):
     weighted_adj = sp.csr_matrix(weighted_adj)
     return weighted_adj, weight_list
 
-def m_step(model, optimizer, weighted_adj, features, modelType):
-    weight_tensor, adj_norm, norm, adj_label, adj_orig, test_edges, test_edges_false = prepare_adj_for_training(weighted_adj)
-    
-    model, optimizer = model_init(adj_norm, features.shape[1], modelType)
+def m_step(model, optimizer, adj, features, bi_adj, latentC, latentT):
+    weight_tensor, adj_norm, norm, adj_label, adj_orig, test_edges, test_edges_false = prepare_adj_for_training(adj)
+    # features = prepare_features_for_training(features)
+    graph_dim = features.shape[1]
+
+    bi_weight_tensor, bi_adj_norm, bi_norm, bi_adj_label, bi_adj_orig, bi_test_edges, bi_test_edges_false = prepare_adj_for_training(bi_adj)
+    bipartite_dim = bi_adj.shape[1]
+
+    model, optimizer = feedbacked_model_init(adj_norm, graph_dim, bipartite_dim)
     model.train()
     for epoch in range(num_epoch):
-        A_pred = model(features)
+        A_pred, Bi_pred = model(features, bi_adj_norm, latentC, latentT)
         optimizer.zero_grad()
-        loss = norm*F.binary_cross_entropy(A_pred.view(-1), adj_label.to_dense().view(-1), weight=weight_tensor)
-        print(loss)
+        loss = norm*F.binary_cross_entropy(A_pred.view(-1), adj_label.to_dense().view(-1), weight = weight_tensor) + bi_norm*F.binary_cross_entropy(Bi_pred.view(-1), bi_adj_label.to_dense().view(-1), weight = bi_weight_tensor)
+        kl_divergence1 = 0.5/ A_pred.size(0) * (1 + 2*model.logstd - model.mean**2 - torch.exp(model.logstd)**2).sum(1).mean()
+        kl_divergence2 = 0.5/ Bi_pred.size(0) * (1 + 2*model.siguma - model.mu**2 - model.siguma**2).sum(1).mean()
+        loss -= kl_divergence1
+        loss -= kl_divergence2
         loss.backward()
         optimizer.step()
+        print(loss)
 
     model.eval()
    
-    z = model.z
-    z = z.to('cpu').detach().numpy().copy().tolist()
+    Z = model.prediction(features, bi_adj_norm).to('cpu').detach().numpy().copy().tolist()
+    Z_c = Z[:graph_dim]
+    Z_t = Z[graph_dim:]
 
-    return z, model, optimizer
+    return Z_c, Z_t, model, optimizer
 
 def criteria(g, update_dict, adj_dict, bib_database, metapath_list, argument):
     
