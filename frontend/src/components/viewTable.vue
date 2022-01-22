@@ -184,6 +184,8 @@ export default {
             this.showFlag = true
             this.closeCompany = response.data.closeComapny
             this.closeTerm = response.data.closeTerm
+            this.queryX = response.data.XY[0]
+            this.queryY = response.data.XY[1]
           }
         })
         .catch(error => {
