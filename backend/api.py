@@ -1,11 +1,13 @@
+from unittest import result
 from flask import Blueprint, jsonify, request
 import torch
 import numpy as np
-from .model.re_train import train
+from .model.re_train import train, recommend
 # from .model.train import initialTrain
-from .util import calcCCDistance, calcCTDistance, calcTTDistance, appendElm
+from .util import calcCCDistance, calcCTDistance, calcTTDistance, appendElm, calcCTDistanceForRecommend, loadBinary, appendElmForRecommend
 # coding: utf-8
-
+from . import app
+temp_folder = app.config['TEMP_FOLDER']
 api = Blueprint('api', __name__)
 
 # @api.route('/initial', methods=['POST'])
@@ -72,3 +74,16 @@ def search():
     result = {'showFlag': True, 'closeComapny': close_company, 'closeTerm': close_term, 'XY': XY}
     result = jsonify(result)
     return result
+
+
+@api.route('/recommend', methods=['POST'])
+def recommendation():
+    Z_c, Z_t = recommend()
+    # query = Z_c[21]
+    close_term_index = calcCTDistanceForRecommend(Z_c, Z_t, 21)
+    term_list = loadBinary(f'{temp_folder}/term.termlist')
+    close_term = appendElmForRecommend(close_term_index, term_list)
+    # recommend()
+    # print(Z_c)
+    result = {'closeTerm': close_term, 'length': len(close_term)}
+    return jsonify(result)
