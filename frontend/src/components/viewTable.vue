@@ -12,6 +12,11 @@
       </v-col>
     </v-row>
   </v-form>
+  <v-row no-gutters>
+    <v-col col="6">
+      <Recommendation />
+    </v-col>
+  </v-row>
   <div v-if="showFlag===true">
     <v-simple-table>
       <template v-slot:default>
@@ -80,8 +85,12 @@
 </template>
 
 <script>
+import Recommendation from '@/components/Recommendation'
 export default {
   name: 'ViewTabel',
+  components: {
+    Recommendation
+  },
   props: {
     companyName: {
       type: Array,

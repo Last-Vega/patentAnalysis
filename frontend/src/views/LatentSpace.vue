@@ -12,16 +12,17 @@
           </div>
         <ViewLatentSpace :options="options" :companyItems="companyItems" :termItems="termItems" />
       </v-col>
+
       <!-- <v-col cols="12" sm="1"> </v-col> -->
       <v-col cols="12" sm="3">
-        <div class="text-center">
+        <!-- <div class="text-center">
           <v-btn color="lighten-2" dark >
             位置を検索する
           </v-btn>
           <v-btn color="lighten-2" dark >
             推薦結果を見る
           </v-btn>
-        </div>
+        </div> -->
         <ViewTabel :companyName="companyName" :termName="termName" :companyZ="this.options.series[0].data" :termZ="this.options.series[1].data" />
       </v-col>
     </v-row>
@@ -45,12 +46,14 @@ import termInfo from '@/assets/SwitchedlatentT0119.json'
 import ViewTabel from '@/components/viewTable'
 import ViewLatentSpace from '@/components/viewLatentInfo'
 import Loading from '@/components/Loading'
+// import Recommendation from '@/components/Recommendation'
 export default {
   name: 'LatentSpace',
   components: {
     ViewTabel,
     ViewLatentSpace,
     Loading
+    // Recommendation
   },
   data () {
     return {
