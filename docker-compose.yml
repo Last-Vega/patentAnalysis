@@ -28,11 +28,6 @@ services:
       - "/app/.idea"
     ports:
       - "5000:5000"
-    environment:
-      DATABASE_USER: root
-      DATABASE_HOST: postgres
-      DATABASE_PASSWORD: pass
-      DATABASE_NAME: lifehack
 
     # stdin_open: true
     # tty: true
