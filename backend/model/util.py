@@ -3,7 +3,6 @@ from scipy.sparse.lil import lil_matrix
 import torch
 import torch.nn.functional as F
 from torch.optim import Adam
-from sklearn.metrics import roc_auc_score, average_precision_score
 import scipy.sparse as sp
 import numpy as np
 
