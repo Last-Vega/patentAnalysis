@@ -20,15 +20,18 @@ const chartOptions = {
     formatter: function () {
       // console.log(this.series.data.length)
       const flag = this.series.data.length
-      if (flag < 50) {
+      const wrd = ''
+      if (flag <= 50) {
         const index = this.series.data.indexOf(this.point)
-        const company = chartOptions.series[0].dataLabal[index]
-        return company
-      } else if (flag >= 50) {
+        console.log('ok')
+        const wrd = chartOptions.series[0].dataLabal[index]
+        return wrd
+      } else if (flag > 50) {
         const index = this.series.data.indexOf(this.point)
-        const term = chartOptions.series[1].dataLabal[index]
-        return term
+        const wrd = chartOptions.series[1].dataLabal[index]
+        return wrd
       }
+      return wrd
     }
   },
   xAxis: {
