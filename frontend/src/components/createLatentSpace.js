@@ -17,13 +17,13 @@ const updateTermIndex = []
 
 const chartOptions = {
   tooltip: {
+    useHTML: true,
     formatter: function () {
       // console.log(this.series.data.length)
       const flag = this.series.data.length
       const wrd = ''
       if (flag <= 50) {
         const index = this.series.data.indexOf(this.point)
-        console.log('ok')
         const wrd = chartOptions.series[0].dataLabal[index]
         return wrd
       } else if (flag > 50) {
