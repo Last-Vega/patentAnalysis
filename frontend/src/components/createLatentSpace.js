@@ -17,7 +17,22 @@ const updateTermIndex = []
 
 const chartOptions = {
   tooltip: {
-    valueDecimals: 9
+    useHTML: true,
+    formatter: function () {
+      // console.log(this.series.data.length)
+      const flag = this.series.data.length
+      const wrd = ''
+      if (flag <= 50) {
+        const index = this.series.data.indexOf(this.point)
+        const wrd = chartOptions.series[0].dataLabal[index]
+        return wrd
+      } else if (flag > 50) {
+        const index = this.series.data.indexOf(this.point)
+        const wrd = chartOptions.series[1].dataLabal[index]
+        return wrd
+      }
+      return wrd
+    }
   },
   xAxis: {
     // min: -1,
