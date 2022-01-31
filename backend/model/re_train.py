@@ -30,7 +30,7 @@ def train(latentC, latentT):
 
     model, optimizer = feedbacked_model_init(adj_norm, graph_dim, bipartite_dim)
     
-    for e in range(10):
+    for e in range(1):
         A_pred, Bi_pred = model(features, bi_adj_norm, latentC, latentT)
         weighted_adj, weight_list = e_step(adj_dict, A_pred)
         weighted_bi, weight_list_bi = e_step(bi_dict, Bi_pred)
