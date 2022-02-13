@@ -8,6 +8,7 @@ __pycache__/
 .DS_Store
 .history
 bi0123-1.dict
+*.dict
 
 # Distribution / packaging
 .Python

@@ -79,7 +79,7 @@ def search():
 @api.route('/recommend', methods=['POST'])
 def recommendation():
     Z_c, Z_t = recommend()
-    close_term_index = calcCTDistanceForRecommend(Z_c, Z_t, 21)
+    close_term_index = calcCTDistanceForRecommend(Z_c, Z_t, 11)
     term_list = loadBinary(f'{temp_folder}/term.termlist')
     close_term = appendElmForRecommend(close_term_index, term_list)
     result = {'closeTerm': close_term, 'length': len(close_term)}
