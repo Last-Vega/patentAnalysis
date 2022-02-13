@@ -11,7 +11,6 @@ from .util import fix_seed, prepare_adj_for_training, prepare_features_for_train
 from .. import app
 temp_folder = app.config['TEMP_FOLDER']
 
-fix_seed(42)
 
 def savePickle(f, data):
     with open(f'{temp_folder}/{f}', 'wb') as wf:
@@ -19,6 +18,7 @@ def savePickle(f, data):
     return 
 
 def train(latentC, latentT):
+    fix_seed(42)
     from .input_data import adj, bi_adj, features, adj_dict, bi_dict
 
     weight_tensor, adj_norm, norm, adj_label, adj_orig, test_edges, test_edges_false = prepare_adj_for_training(adj)
@@ -67,8 +67,9 @@ def createFeatures(adj:csr_matrix) -> lil_matrix:
     return features
 
 def recommend():
-    adj_dict = loadBinary(f'{temp_folder}/adj0123.dict')
-    bi_dict = loadBinary(f'{temp_folder}/bi0123-1.dict')
+    fix_seed(42)
+    adj_dict = loadBinary(f'{temp_folder}/adj0213.dict')
+    bi_dict = loadBinary(f'{temp_folder}/bi0213.dict')
     adj_weight_list = loadBinary(f'{temp_folder}/weightAdj.list')
     bi_weight_list = loadBinary(f'{temp_folder}/weightBi.list')
     adj_shape = adj_dict['CPC'].shape
