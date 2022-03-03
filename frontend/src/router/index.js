@@ -9,6 +9,11 @@ const routes = [
     path: '/',
     name: 'LatentSpace',
     component: LatentSpace
+  },
+  {
+    path: '/vs',
+    name: 'ObayashiKajima',
+    component: LatentSpace
   }
 
 ]
