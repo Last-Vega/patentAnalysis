@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import LatentSpace from '../views/LatentSpace.vue'
-// import Login from '../views/Login.vue'
+import Compare from '../views/Compare.vue'
 Vue.use(VueRouter)
 
 const routes = [
@@ -13,7 +13,7 @@ const routes = [
   {
     path: '/vs',
     name: 'ObayashiKajima',
-    component: LatentSpace
+    component: Compare
   }
 
 ]
