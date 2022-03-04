@@ -3,21 +3,21 @@ from flask import Blueprint, jsonify, request
 import torch
 import numpy as np
 from .model.re_train import train, recommend
-# from .model.train import initialTrain
+from .model.train import initialTrain
 from .util import calcCCDistance, calcCTDistance, calcTTDistance, appendElm, calcCTDistanceForRecommend, loadBinary, appendElmForRecommend
 # coding: utf-8
 from . import app
 temp_folder = app.config['TEMP_FOLDER']
 api = Blueprint('api', __name__)
 
-# @api.route('/initial', methods=['POST'])
-# def initial():
-#     m = request.get_json()['m']
-#     print(m)
-#     # initialTrain()
-#     result = {'message': 'success'}
-#     s = initialTrain()
-#     return jsonify(result)
+@api.route('/initial', methods=['POST'])
+def initial():
+    m = request.get_json()['m']
+    print(m)
+    # initialTrain()
+    result = {'message': 'success'}
+    s = initialTrain()
+    return jsonify(result)
 
 @api.route('/update', methods=['POST'])
 def update():
