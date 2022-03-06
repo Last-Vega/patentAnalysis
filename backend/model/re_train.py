@@ -15,7 +15,7 @@ temp_folder = app.config['TEMP_FOLDER']
 def savePickle(f, data):
     with open(f'{temp_folder}/{f}', 'wb') as wf:
         pickle.dump(data, wf)
-    return 
+    return
 
 def train(latentC, latentT):
     fix_seed(42)
@@ -29,13 +29,13 @@ def train(latentC, latentT):
     bipartite_dim = bi_adj.shape[1]
 
     model, optimizer = feedbacked_model_init(adj_norm, graph_dim, bipartite_dim)
-    
+
     for e in range(1):
         A_pred, Bi_pred = model(features, bi_adj_norm, latentC, latentT)
         weighted_adj, weight_list = e_step(adj_dict, A_pred)
         weighted_bi, weight_list_bi = e_step(bi_dict, Bi_pred)
         Z_c, Z_t, model, optimizer = m_step(model, optimizer, weighted_adj, features, weighted_bi, latentC, latentT)
-        
+
 
     savePickle('weightAdj.list', weight_list)
     savePickle('weightBi.list', weight_list_bi)
@@ -67,7 +67,7 @@ def createFeatures(adj:csr_matrix) -> lil_matrix:
     return features
 
 def recommend():
-    fix_seed(42)
+    # fix_seed(42)
     adj_dict = loadBinary(f'{temp_folder}/adj0213.dict')
     bi_dict = loadBinary(f'{temp_folder}/bi0213.dict')
     adj_weight_list = loadBinary(f'{temp_folder}/weightAdj.list')
@@ -99,7 +99,7 @@ def recommend():
         loss.backward()
         optimizer.step()
         print(loss)
-    
+
     Z = model.Z_t.to('cpu').detach().numpy().copy().tolist()
     Z_c = Z[:graph_dim]
     Z_t = Z[graph_dim:]
