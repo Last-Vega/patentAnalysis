@@ -27,7 +27,7 @@ import {
   chartOptions,
   updateCompanyIndex,
   updateTermIndex
-} from '@/components/createCompareLatentSpace'
+} from '@/components/createCompareLatentSpace.js'
 
 import companyInfo from '@/assets/KajimaObayashiLatentComp0306.json'
 import termInfo from '@/assets/KajimaObayashiLatentTerm0306.json'
