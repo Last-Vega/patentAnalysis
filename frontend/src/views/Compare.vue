@@ -27,7 +27,10 @@ import {
   chartOptions,
   updateCompanyIndex,
   updateTermIndex
-} from '@/components/createLatentSpace'
+} from '@/components/createCompareLatentSpace'
+
+import companyInfo from '@/assets/KajimaObayashiLatentComp0306.json'
+import termInfo from '@/assets/KajimaObayashiLatentTerm0306.json'
 
 import ViewTabel from '@/components/viewTable'
 import ViewLatentSpace from '@/components/viewLatentInfo'
@@ -39,10 +42,17 @@ export default {
     ViewTabel,
     ViewLatentSpace,
     Loading
+    // Recommendation
   },
   data () {
     return {
       options: chartOptions,
+      headers: [
+        { text: 'Title', value: 'title' },
+        { text: 'Authors', value: 'author' },
+        { text: 'Conference', value: 'conference' },
+        { text: 'Year', value: 'year' }
+      ],
       companyItems: companyTableData,
       termItems: termTableData,
       companyName: [],
@@ -90,21 +100,21 @@ export default {
     }
   },
   created () {
-    // const companyData = companyInfo.key
-    // const termData = termInfo.key
-    // for (let i = 0; i < companyData.length; i++) {
-    //   this.companyName.push(companyData[i].company)
-    //   this.companyXY.push([companyData[i].x, companyData[i].y])
-    // }
-    // for (let i = 0; i < termData.length; i++) {
-    //   this.termName.push(termData[i].term)
-    //   this.termXY.push([termData[i].x, termData[i].y])
-    // }
-    // console.log(this.companyXY)
-    // this.options.series[0].dataLabal = this.companyName
-    // this.options.series[0].data = this.companyXY
-    // this.options.series[1].dataLabal = this.termName
-    // this.options.series[1].data = this.termXY
+    const companyData = companyInfo
+    const termData = termInfo
+    for (let i = 0; i < companyData.length; i++) {
+      this.companyName.push(companyData[i].company)
+      this.companyXY.push([companyData[i].x, companyData[i].y])
+    }
+    for (let i = 0; i < termData.length; i++) {
+      this.termName.push(termData[i].term)
+      this.termXY.push([termData[i].x, termData[i].y])
+    }
+    console.log(this.companyXY)
+    this.options.series[0].dataLabal = this.companyName
+    this.options.series[0].data = this.companyXY
+    this.options.series[1].dataLabal = this.termName
+    this.options.series[1].data = this.termXY
   }
 }
 </script>
