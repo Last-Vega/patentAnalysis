@@ -41,4 +41,4 @@ RUN apt-get install -y supervisor
 
 # nginx.confのlistenポートをherokuによって設定される環境変数PORTに変更し、サービスを起動。
 CMD sed -i -e "s/ENV_PORT/$PORT/g" /etc/nginx/nginx.conf &&\
-    supervisord -c supervisord.conf    
+    supervisord -c supervisord.conf
