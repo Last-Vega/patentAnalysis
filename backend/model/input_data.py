@@ -20,26 +20,26 @@ def createFeatures(adj:csr_matrix) -> lil_matrix:
     return features
 
 
-# f_name:str = './W_adj.adj'
+f_name:str = './W_adj.adj'
 
-# f_name = f'{temp_folder}/W_adj0122.adj'
-# adj:csr_matrix = loadBinary(f_name)
+f_name = f'{temp_folder}/W_adj0122.adj'
+adj:csr_matrix = loadBinary(f_name)
 
-# features:lil_matrix = createFeatures(adj)
+features:lil_matrix = createFeatures(adj)
 
-# f_name:str = f'{temp_folder}/W_bi0122.adj'
-# bi_adj:csr_matrix = loadBinary(f_name)
+f_name:str = f'{temp_folder}/W_bi0122.adj'
+bi_adj:csr_matrix = loadBinary(f_name)
 
-# f_name = f'{temp_folder}/adj0122.dict'
-# adj_dict = loadBinary(f_name)
-# f_name = f'{temp_folder}/bi0122-1.dict'
-# bi_dict = loadBinary(f_name)
-
-f_name = f'{temp_folder}/adj0304.dict'
+f_name = f'{temp_folder}/adj0122.dict'
 adj_dict = loadBinary(f_name)
-f_name = f'{temp_folder}/bi0304.dict'
+f_name = f'{temp_folder}/bi0122-1.dict'
 bi_dict = loadBinary(f_name)
-features:lil_matrix = createFeatures(adj_dict['CPC'])
+
+# f_name = f'{temp_folder}/adj0304.dict'
+# adj_dict = loadBinary(f_name)
+# f_name = f'{temp_folder}/bi0304.dict'
+# bi_dict = loadBinary(f_name)
+# features:lil_matrix = createFeatures(adj_dict['CPC'])
 
 # with open('../vars/annotate.ct', 'rb') as rb:
 #     annotate_list:list = pickle.load(rb)
