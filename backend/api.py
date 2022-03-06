@@ -2,7 +2,7 @@
 from flask import Blueprint, jsonify, request
 import torch
 import numpy as np
-from .model.re_train import train, recommend
+from .model.re_train import train, recommend, vstrain
 from .model.train import initialTrain
 from .util import calcCCDistance, calcCTDistance, calcTTDistance, appendElm, calcCTDistanceForRecommend, loadBinary, appendElmForRecommend
 # coding: utf-8
@@ -10,14 +10,14 @@ from . import app
 temp_folder = app.config['TEMP_FOLDER']
 api = Blueprint('api', __name__)
 
-@api.route('/initial', methods=['POST'])
-def initial():
-    m = request.get_json()['m']
-    print(m)
-    # initialTrain()
-    result = {'message': 'success'}
-    s = initialTrain()
-    return jsonify(result)
+# @api.route('/initial', methods=['POST'])
+# def initial():
+#     m = request.get_json()['m']
+#     print(m)
+#     # initialTrain()
+#     result = {'message': 'success'}
+#     s = initialTrain()
+#     return jsonify(result)
 
 @api.route('/update', methods=['POST'])
 def update():
@@ -84,3 +84,21 @@ def recommendation():
     close_term = appendElmForRecommend(close_term_index, term_list)
     result = {'closeTerm': close_term, 'length': len(close_term)}
     return jsonify(result)
+
+
+@api.route('/vsupdate', methods=['POST'])
+def vsupdate():
+    latent_c = request.get_json()['companyZ']
+    latent_t = request.get_json()['termZ']
+    connected = []
+    connected += latent_c
+    connected += latent_t
+
+    tensor_latentC = torch.tensor(latent_c, requires_grad=True, dtype=torch.float32)
+    tensor_latentT = torch.tensor(connected, requires_grad=True, dtype=torch.float32)
+
+    Z_c, Z_t = vstrain(tensor_latentC, tensor_latentT)
+
+    result = {'company': Z_c, 'term': Z_t}
+    result = jsonify(result)
+    return result

@@ -20,6 +20,15 @@ def createFeatures(adj:csr_matrix) -> lil_matrix:
     return features
 
 
+def forCompare():
+    f_name = f'{temp_folder}/adj0306.dict'
+    adj_dict = loadBinary(f_name)
+    f_name = f'{temp_folder}/bi0306.dict'
+    bi_dict = loadBinary(f_name)
+    features:lil_matrix = createFeatures(adj_dict['CPC'])
+    return adj_dict, bi_dict, features
+
+
 f_name:str = './W_adj.adj'
 
 f_name = f'{temp_folder}/W_adj0122.adj'

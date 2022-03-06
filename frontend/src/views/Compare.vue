@@ -77,7 +77,7 @@ export default {
       this.isShow = true
       console.log(this.updateComapny)
       console.log(this.updateTerm)
-      const path = process.env.VUE_APP_BASE_URL + 'api/update'
+      const path = process.env.VUE_APP_BASE_URL + 'api/vsupdate'
       const postData = {
         companyZ: this.options.series[0].data,
         termZ: this.options.series[1].data,
@@ -90,7 +90,7 @@ export default {
           this.updateCompany.splice(0, this.updateCompany.length)
           this.updateTerm.splice(0, this.updateTerm.length)
           console.log(response.data.company)
-          this.makeScatter(response.data.company, response.data.term)
+          // this.makeScatter(response.data.company, response.data.term)
           this.isShow = false
         })
         .catch(error => {
