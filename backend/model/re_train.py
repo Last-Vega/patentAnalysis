@@ -103,3 +103,35 @@ def recommend():
     Z_c = Z[:graph_dim]
     Z_t = Z[graph_dim:]
     return Z_c, Z_t
+
+
+def vstrain(latentC, latentT):
+    from .input_data import forCompare
+
+    adj_dict, bi_dict, features = forCompare()
+    adj_weight_list = loadBinary(f'{temp_folder}/vsCC0307.w')
+    bi_weight_list = loadBinary(f'{temp_folder}/vsCT0307.w')
+    adj_shape = adj_dict['CPC'].shape
+    bi_shape = bi_dict['CPT'].shape
+    adj = weighting(adj_dict, adj_weight_list, adj_shape)
+    bi_adj = weighting(bi_dict, bi_weight_list, bi_shape)
+
+    weight_tensor, adj_norm, norm, adj_label, adj_orig, test_edges, test_edges_false = prepare_adj_for_training(adj)
+    features = prepare_features_for_training(features)
+    graph_dim = features.shape[1]
+
+    bi_weight_tensor, bi_adj_norm, bi_norm, bi_adj_label, bi_adj_orig, bi_test_edges, bi_test_edges_false = prepare_adj_for_training(bi_adj)
+    bipartite_dim = bi_adj.shape[1]
+
+    model, optimizer = feedbacked_model_init(adj_norm, graph_dim, bipartite_dim)
+    
+    for e in range(10):
+        A_pred, Bi_pred = model(features, bi_adj_norm, latentC, latentT)
+        weighted_adj, weight_list = e_step(adj_dict, A_pred)
+        weighted_bi, weight_list_bi = e_step(bi_dict, Bi_pred)
+        Z_c, Z_t, model, optimizer = m_step(model, optimizer, weighted_adj, features, weighted_bi, latentC, latentT)
+        
+
+    savePickle('vsCC0307.w', weight_list)
+    savePickle('vsCT0307.w', weight_list_bi)
+    return Z_c, Z_t
