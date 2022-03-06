@@ -10,14 +10,14 @@ from . import app
 temp_folder = app.config['TEMP_FOLDER']
 api = Blueprint('api', __name__)
 
-@api.route('/initial', methods=['POST'])
-def initial():
-    m = request.get_json()['m']
-    print(m)
-    # initialTrain()
-    result = {'message': 'success'}
-    s = initialTrain()
-    return jsonify(result)
+# @api.route('/initial', methods=['POST'])
+# def initial():
+#     m = request.get_json()['m']
+#     print(m)
+#     # initialTrain()
+#     result = {'message': 'success'}
+#     s = initialTrain()
+#     return jsonify(result)
 
 @api.route('/update', methods=['POST'])
 def update():
