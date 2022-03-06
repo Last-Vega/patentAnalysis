@@ -10,7 +10,7 @@
                 </v-btn>
             </div>
           </div>
-        <ViewLatentSpace :options="options" :companyItems="companyItems" :termItems="termItems" />
+        <ViewLatentSpace :options="options" :companyItems="CCContrib" :termItems="CTContrib" />
       </v-col>
 
       <v-col cols="12" sm="3">
@@ -62,7 +62,11 @@ export default {
       query: '',
       updateCompany: updateCompanyIndex,
       updateTerm: updateTermIndex,
-      isShow: false
+      isShow: false,
+      maxCCPath: '',
+      maxCTPath: '',
+      CCContrib: '',
+      CTContrib: ''
     }
   },
   methods: {
@@ -72,6 +76,28 @@ export default {
       this.termXY = term
       this.options.series[0].data = company
       this.options.series[1].data = term
+    },
+    interpretation (ccPath, ctPath) {
+      const path = {
+        C: '企業',
+        T: '技術用語',
+        Y: '公開年',
+        I: '筆頭IPC',
+        F: 'Fターム',
+        P: '-特許-'
+      }
+      const CCElmArray = ccPath.split('')
+      const CTElmArray = ctPath.split('')
+
+      for (const elm of CCElmArray) {
+        console.log(elm)
+        this.CCContrib += path[elm]
+      }
+
+      for (const elm of CTElmArray) {
+        this.CTContrib += path[elm]
+      }
+      console.log(this.CCContrib)
     },
     async updateZ () {
       this.isShow = true
@@ -90,8 +116,9 @@ export default {
           this.updateCompany.splice(0, this.updateCompany.length)
           this.updateTerm.splice(0, this.updateTerm.length)
           console.log(response.data.company)
-          // this.makeScatter(response.data.company, response.data.term)
+          this.makeScatter(response.data.company, response.data.term)
           this.isShow = false
+          this.interpretation(response.data.maxCCPath, response.data.maxCTPath)
         })
         .catch(error => {
           console.log(error)
