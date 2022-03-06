@@ -7,7 +7,7 @@ import torch.nn.functional as F
 from .args import *
 import os
 import pickle
-from .util import fix_seed, prepare_adj_for_training, prepare_features_for_training, feedbacked_model_init, e_step, m_step, model_init
+from .util import fix_seed, prepare_adj_for_training, prepare_features_for_training, feedbacked_model_init, e_step, m_step, model_init, criteria
 from .. import app
 temp_folder = app.config['TEMP_FOLDER']
 
@@ -17,7 +17,7 @@ def savePickle(f, data):
         pickle.dump(data, wf)
     return 
 
-def train(latentC, latentT):
+def train(latentC, latentT, uCI, uTI):
     fix_seed(42)
     from .input_data import adj, bi_adj, features, adj_dict, bi_dict
 
@@ -29,8 +29,9 @@ def train(latentC, latentT):
     bipartite_dim = bi_adj.shape[1]
 
     model, optimizer = feedbacked_model_init(adj_norm, graph_dim, bipartite_dim)
-    
-    for e in range(10):
+    adj_dict = criteria(adj_dict, uCI, latentC)
+    bi_dict = criteria(bi_dict, uTI, latentT)
+    for e in range(2):
         A_pred, Bi_pred = model(features, bi_adj_norm, latentC, latentT)
         weighted_adj, weight_list = e_step(adj_dict, A_pred)
         weighted_bi, weight_list_bi = e_step(bi_dict, Bi_pred)
@@ -39,13 +40,11 @@ def train(latentC, latentT):
     # x = random.randint(0,100)
     # print(x)
     # torch.seed(x)
-    print(weight_list)
-    weight_list = np.random.rand(5)
-    print(weight_list)
-    weight_list_bi = np.random.rand(4)
     savePickle('weightAdj.list', weight_list)
     savePickle('weightBi.list', weight_list_bi)
-    return Z_c, Z_t
+    max_cc = list(adj_dict.keys())[weight_list.index(max(weight_list))]
+    max_ct = list(bi_dict.keys())[weight_list_bi.index(max(weight_list_bi))]
+    return Z_c, Z_t, max_cc, max_ct
 
 def loadBinary(f_name):
     with open(f_name, 'rb') as rb:
@@ -112,7 +111,7 @@ def recommend():
     return Z_c, Z_t
 
 
-def vstrain(latentC, latentT):
+def vstrain(latentC, latentT, uCI, uTI):
     from .input_data import forCompare
 
     adj_dict, bi_dict, features = forCompare()
@@ -131,8 +130,9 @@ def vstrain(latentC, latentT):
     bipartite_dim = bi_adj.shape[1]
 
     model, optimizer = feedbacked_model_init(adj_norm, graph_dim, bipartite_dim)
-    
-    for e in range(10):
+    adj_dict = criteria(adj_dict, uCI, latentC)
+    bi_dict = criteria(bi_dict, uTI, latentT)
+    for e in range(2):
         A_pred, Bi_pred = model(features, bi_adj_norm, latentC, latentT)
         weighted_adj, weight_list = e_step(adj_dict, A_pred)
         weighted_bi, weight_list_bi = e_step(bi_dict, Bi_pred)
@@ -141,4 +141,6 @@ def vstrain(latentC, latentT):
 
     savePickle('vsCC0307.w', weight_list)
     savePickle('vsCT0307.w', weight_list_bi)
-    return Z_c, Z_t
+    max_cc = list(adj_dict.keys())[weight_list.index(max(weight_list))]
+    max_ct = list(bi_dict.keys())[weight_list_bi.index(max(weight_list_bi))]
+    return Z_c, Z_t, max_cc, max_ct

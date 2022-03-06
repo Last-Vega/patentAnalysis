@@ -5,7 +5,7 @@ import torch.nn.functional as F
 from torch.optim import Adam
 import scipy.sparse as sp
 import numpy as np
-
+from scipy.spatial import distance
 from .preprocessing import *
 
 from .args import *
@@ -144,6 +144,14 @@ def m_step(model, optimizer, adj, features, bi_adj, latentC, latentT):
 
     return Z_c, Z_t, model, optimizer
 
-def criteria(g, update_dict, adj_dict, bib_database, metapath_list, argument):
-    
+def criteria(adj_dict, updateList, latentData):
+    K = 5
+    latentData = latentData.detach().numpy()
+    pri_dist = distance.cdist(latentData, latentData, metric='euclidean')
+    tri_dist = distance.cdist(latentData, latentData, metric='euclidean')
+    for updateIndex in updateList:
+        closeIndexList = np.argpartition(tri_dist[updateIndex], K)[:K-len(tri_dist[updateIndex])].tolist()
+        for closeIndex in closeIndexList:
+            for key, adjOrig in adj_dict.items():
+                adj_dict[key][closeIndex] += 1
     return adj_dict

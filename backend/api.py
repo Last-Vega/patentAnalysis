@@ -27,12 +27,17 @@ def update():
     connected += latent_c
     connected += latent_t
 
+    updateCompanyIndex = request.get_json()['CompanyIndex']
+    updateTermIndex = request.get_json()['TermIndex']
+    updateTermIndex = [index+50 for index in updateTermIndex]
+    updateTermIndex += updateCompanyIndex
+
     tensor_latentC = torch.tensor(latent_c, requires_grad=True, dtype=torch.float32)
     tensor_latentT = torch.tensor(connected, requires_grad=True, dtype=torch.float32)
 
-    Z_c, Z_t = train(tensor_latentC, tensor_latentT)
+    Z_c, Z_t, maxCCPath, maxCTPath = train(tensor_latentC, tensor_latentT, updateCompanyIndex, updateTermIndex)
 
-    result = {'company': Z_c, 'term': Z_t}
+    result = {'company': Z_c, 'term': Z_t, 'maxCCPath': maxCCPath, 'maxCTPath': maxCTPath}
     result = jsonify(result)
     return result
 
@@ -93,12 +98,16 @@ def vsupdate():
     connected = []
     connected += latent_c
     connected += latent_t
-
+    updateCompanyIndex = request.get_json()['CompanyIndex']
+    updateTermIndex = request.get_json()['TermIndex']
+    updateTermIndex = [index+50 for index in updateTermIndex]
+    updateTermIndex += updateCompanyIndex
+    
     tensor_latentC = torch.tensor(latent_c, requires_grad=True, dtype=torch.float32)
     tensor_latentT = torch.tensor(connected, requires_grad=True, dtype=torch.float32)
 
-    Z_c, Z_t = vstrain(tensor_latentC, tensor_latentT)
+    Z_c, Z_t, maxCCPath, maxCTPath = vstrain(tensor_latentC, tensor_latentT, updateCompanyIndex, updateTermIndex)
 
-    result = {'company': Z_c, 'term': Z_t}
+    result = {'company': Z_c, 'term': Z_t, 'maxCCPath': maxCCPath, 'maxCTPath': maxCTPath}
     result = jsonify(result)
     return result

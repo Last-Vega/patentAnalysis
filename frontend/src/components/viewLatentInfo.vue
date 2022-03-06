@@ -3,44 +3,12 @@
   <highcharts :options="options" ref="chart"></highcharts>
   <v-container class="grey lighten-5">
     <v-row no-gutters>
-        <v-col cols="12" sm="5">
-          <v-simple-table>
-            <template v-slot:default>
-              <caption>
-                ホバーした企業
-              </caption>
-              <thead>
-                <tr>
-                  <th class="text-left">Company</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>{{ companyItems.company }}</td>
-                </tr>
-              </tbody>
-            </template>
-          </v-simple-table>
+        <v-col cols="12" sm="12">
+          企業の配置に強く影響を与えているのは<span class="relationC">{{companyItems}}</span>の関係です
         </v-col>
         <v-col cols="12" sm="2"> </v-col>
-        <v-col cols="12" sm="5">
-          <v-simple-table>
-            <template v-slot:default>
-              <caption>
-                ホバーした単語
-              </caption>
-              <thead>
-                <tr>
-                  <th class="text-left">Term</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>{{ termItems.term }}</td>
-                </tr>
-              </tbody>
-            </template>
-          </v-simple-table>
+        <v-col cols="12" sm="12">
+          用語の配置に強く影響を与えているのは<span class="relationT">{{termItems}}</span>の関係です
         </v-col>
     </v-row>
     </v-container>
@@ -57,11 +25,11 @@ export default {
       required: true
     },
     companyItems: {
-      type: Object,
+      type: String,
       required: true
     },
     termItems: {
-      type: Object,
+      type: String,
       required: true
     }
   },
@@ -69,7 +37,10 @@ export default {
   },
   data () {
     return {
-
+      CCContrib: '',
+      CTContrib: '',
+      ccPath: this.companyItems,
+      ctPath: this.termItems
     }
   },
   methods: {
@@ -78,3 +49,12 @@ export default {
 
 }
 </script>
+
+<style scoped>
+.relationC {
+  color: blue;
+}
+.relationT {
+  color: red;
+}
+</style>
