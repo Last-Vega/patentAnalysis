@@ -1,5 +1,6 @@
 import torch
 import torch.nn.functional as F
+from scipy.sparse import csr_matrix, lil_matrix
 from .args import *
 import os
 from .util import fix_seed, prepare_adj_for_training, prepare_features_for_training, model_init
@@ -8,11 +9,29 @@ from .util import fix_seed, prepare_adj_for_training, prepare_features_for_train
 from .. import app
 temp_folder = app.config['TEMP_FOLDER']
 
+def weighting(dict, list, size):
+    weighted_adj = torch.zeros((size[0],size[1]))
+    for weight, original_adj in zip(list, dict.values()):
+        original_adj = torch.from_numpy(original_adj).clone().to(torch.float32)
+        weighted_adj += weight * original_adj
+    weighted_adj = torch.nan_to_num(weighted_adj)
+    weighted_adj = weighted_adj.to('cpu').detach().numpy().copy()
+    weighted_adj = csr_matrix(weighted_adj)
+    return weighted_adj
+    
+
 def initialTrain():
-    from .input_data import adj, features, bi_adj
+    # from .input_data import adj, features, bi_adj
+    from .input_data import adj_dict, features, bi_dict
     fix_seed(42)
     # Train on CPU (hide GPU) due to memory constraints
     os.environ['CUDA_VISIBLE_DEVICES'] = ""
+    adj_shape = adj_dict['CPC'].shape
+    bi_shape = bi_dict['CPT'].shape
+    adj_weight_list = [1] * len(adj_dict)
+    bi_weight_list = [1] * len(bi_dict)
+    adj = weighting(adj_dict, adj_weight_list, adj_shape)
+    bi_adj = weighting(bi_dict, bi_weight_list, bi_shape)
 
     weight_tensor, adj_norm, norm, adj_label, adj_orig, test_edges, test_edges_false = prepare_adj_for_training(adj)
     features = prepare_features_for_training(features)
@@ -40,8 +59,8 @@ def initialTrain():
     Z_c = Z[:num_createdBy]
     Z_t = Z[num_createdBy:]
     import pickle
-    with open(f'{temp_folder}/z.c', 'wb') as wb:
+    with open(f'{temp_folder}/z0304.c', 'wb') as wb:
         pickle.dump(Z_c, wb)
 
-    with open(f'{temp_folder}/z.t', 'wb') as wb:
+    with open(f'{temp_folder}/z0304.t', 'wb') as wb:
         pickle.dump(Z_t, wb)

@@ -35,8 +35,10 @@ def train(latentC, latentT):
         weighted_adj, weight_list = e_step(adj_dict, A_pred)
         weighted_bi, weight_list_bi = e_step(bi_dict, Bi_pred)
         Z_c, Z_t, model, optimizer = m_step(model, optimizer, weighted_adj, features, weighted_bi, latentC, latentT)
+    
 
-
+    weight_list = np.random.rand(5)
+    weight_list_bi = np.random.rand(4)
     savePickle('weightAdj.list', weight_list)
     savePickle('weightBi.list', weight_list_bi)
     return Z_c, Z_t
@@ -71,6 +73,7 @@ def recommend():
     adj_dict = loadBinary(f'{temp_folder}/adj0213.dict')
     bi_dict = loadBinary(f'{temp_folder}/bi0213.dict')
     adj_weight_list = loadBinary(f'{temp_folder}/weightAdj.list')
+    print(adj_weight_list)
     bi_weight_list = loadBinary(f'{temp_folder}/weightBi.list')
     adj_shape = adj_dict['CPC'].shape
     bi_shape = bi_dict['CPT'].shape
@@ -86,9 +89,8 @@ def recommend():
     bipartite_dim = weighted_bi.shape[1]
 
     model, optimizer = model_init(adj_norm, graph_dim, bipartite_dim)
-    print('ok')
 
-    for epoch in range(1):
+    for epoch in range(2):
         A_pred, Bi_pred = model(features, bi_adj_norm)
         optimizer.zero_grad()
         loss = norm*F.binary_cross_entropy(A_pred.view(-1), adj_label.to_dense().view(-1), weight = weight_tensor) + bi_norm*F.binary_cross_entropy(Bi_pred.view(-1), bi_adj_label.to_dense().view(-1), weight = bi_weight_tensor)
@@ -103,4 +105,36 @@ def recommend():
     Z = model.Z_t.to('cpu').detach().numpy().copy().tolist()
     Z_c = Z[:graph_dim]
     Z_t = Z[graph_dim:]
+    return Z_c, Z_t
+
+
+def vstrain(latentC, latentT):
+    from .input_data import forCompare
+
+    adj_dict, bi_dict, features = forCompare()
+    adj_weight_list = loadBinary(f'{temp_folder}/vsCC0307.w')
+    bi_weight_list = loadBinary(f'{temp_folder}/vsCT0307.w')
+    adj_shape = adj_dict['CPC'].shape
+    bi_shape = bi_dict['CPT'].shape
+    adj = weighting(adj_dict, adj_weight_list, adj_shape)
+    bi_adj = weighting(bi_dict, bi_weight_list, bi_shape)
+
+    weight_tensor, adj_norm, norm, adj_label, adj_orig, test_edges, test_edges_false = prepare_adj_for_training(adj)
+    features = prepare_features_for_training(features)
+    graph_dim = features.shape[1]
+
+    bi_weight_tensor, bi_adj_norm, bi_norm, bi_adj_label, bi_adj_orig, bi_test_edges, bi_test_edges_false = prepare_adj_for_training(bi_adj)
+    bipartite_dim = bi_adj.shape[1]
+
+    model, optimizer = feedbacked_model_init(adj_norm, graph_dim, bipartite_dim)
+    
+    for e in range(10):
+        A_pred, Bi_pred = model(features, bi_adj_norm, latentC, latentT)
+        weighted_adj, weight_list = e_step(adj_dict, A_pred)
+        weighted_bi, weight_list_bi = e_step(bi_dict, Bi_pred)
+        Z_c, Z_t, model, optimizer = m_step(model, optimizer, weighted_adj, features, weighted_bi, latentC, latentT)
+        
+
+    savePickle('vsCC0307.w', weight_list)
+    savePickle('vsCT0307.w', weight_list_bi)
     return Z_c, Z_t

@@ -16,3 +16,11 @@ learning_rate:float = 0.01
 # num_headIPC:int = 148
 # num_f_term:int = 8291
 # num_createdAt:int = 21
+
+num_patent:int = 9578
+# num_createdBy:int = 2
+num_createdBy:int = 1093
+num_term:int = 850
+num_headIPC:int = 248
+num_f_term:int = 8291
+num_createdAt:int = 21

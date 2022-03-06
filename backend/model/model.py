@@ -6,7 +6,7 @@ import os
 import sys
 import numpy as np
 from .args import *
-torch.manual_seed(42)
+# torch.manual_seed(42)
 
 class GraphConvSparse(nn.Module):
 	def __init__(self, input_dim, output_dim, adj, activation = F.relu, **kwargs):

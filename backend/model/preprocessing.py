@@ -41,7 +41,10 @@ def mask_test_edges(adj):
     edges_all = sparse_to_tuple(adj)[0]
     num_test = int(np.floor(edges.shape[0] / 10.))
     num_val = int(np.floor(edges.shape[0] / 20.))
-
+    
+    # print(edges.shape[0])
+    # print(num_test)
+    # print(num_val)
     all_edge_idx = list(range(edges.shape[0]))
     np.random.shuffle(all_edge_idx)
     val_edge_idx = all_edge_idx[:num_val]
@@ -49,6 +52,8 @@ def mask_test_edges(adj):
     test_edges = edges[test_edge_idx]
     val_edges = edges[val_edge_idx]
     # print(edges)
+    # print(test_edge_idx)
+    # print(val_edge_idx)
     # print(test_edges)
     # print(val_edges)
     train_edges = np.delete(edges, np.hstack([test_edge_idx, val_edge_idx]), axis=0)
