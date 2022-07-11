@@ -1,4 +1,4 @@
-version: "3"
+version: "2.3"
 services:
   frontend:
     build:
@@ -28,6 +28,13 @@ services:
       - "/app/.idea"
     ports:
       - "5000:5000"
+    
+    runtime: nvidia
+    environment:
+      NVIDIA_VISIBLE_DEVICES: all
+      NVIDIA_DRIVER_CAPABILITIES: all
+    stdin_open: true
+    tty: true
 
     # stdin_open: true
     # tty: true
