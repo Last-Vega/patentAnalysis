@@ -74,8 +74,10 @@ def createFeatures(adj:csr_matrix) -> lil_matrix:
 
 def recommend():
     fix_seed(42)
-    adj_dict = loadBinary(f'{temp_folder}/adj0304.dict')
-    bi_dict = loadBinary(f'{temp_folder}/bi0304.dict')
+    # adj_dict = loadBinary(f'{temp_folder}/adj0304.dict')
+    # bi_dict = loadBinary(f'{temp_folder}/bi0304.dict')
+    adj_dict = loadBinary(f'{temp_folder}/adj0122.dict')
+    bi_dict = loadBinary(f'{temp_folder}/bi0122-1.dict')
     adj_weight_list = loadBinary(f'{temp_folder}/weightAdj.list')
     print(adj_weight_list)
     bi_weight_list = loadBinary(f'{temp_folder}/weightBi.list')
