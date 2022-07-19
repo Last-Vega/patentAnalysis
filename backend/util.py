@@ -47,7 +47,8 @@ def loadBinary(f_name):
 def calcCTDistanceForRecommend(latent_c, latent_t, q_id):
     K = 30
     CTdist = distance.cdist(latent_c, latent_t, metric='euclidean')
-    
+    # print(CTdist.shape)
+    # exit()
     close_index = np.argpartition(CTdist[q_id], K)[:K-len(CTdist[q_id])].tolist()
 
     return close_index

@@ -1,4 +1,4 @@
-version: "3"
+version: "2.3"
 services:
   frontend:
     build:
@@ -28,34 +28,36 @@ services:
       - "/app/.idea"
     ports:
       - "5000:5000"
+    
+    runtime: nvidia
     environment:
-      DATABASE_USER: root
-      DATABASE_HOST: postgres
-      DATABASE_PASSWORD: pass
-      DATABASE_NAME: lifehack
+      NVIDIA_VISIBLE_DEVICES: all
+      NVIDIA_DRIVER_CAPABILITIES: all
+    stdin_open: true
+    tty: true
 
     # stdin_open: true
     # tty: true
 
   # 本番環境のサーバーで使用
-  # uwsgi:
-  #   build:
-  #     context: .
-  #     dockerfile: Dockerfile_uwsgi
-  #   container_name: "uwsgi"
-  #   volumes:
-  #     - "./:/app"
-  #     - "/app/.vscode"
-  #     - "/app/.idea"
-  #   expose:
-  #     - "8080"
-  #   environment:
-  #     DATABASE_USER: takowasan
-  #     DATABASE_HOST: postgres
-  #     DATABASE_PASSWORD: pass
-  #     DATABASE_NAME: tabiluck
-  #   depends_on:
-  #     - postgres
+  uwsgi:
+    build:
+      context: .
+      dockerfile: Dockerfile_uwsgi
+    container_name: "uwsgi"
+    volumes:
+      - "./:/app"
+      - "/app/.vscode"
+      - "/app/.idea"
+    expose:
+      - "8080"
+    # environment:
+    #   DATABASE_USER: takowasan
+    #   DATABASE_HOST: postgres
+    #   DATABASE_PASSWORD: pass
+    #   DATABASE_NAME: tabiluck
+    # depends_on:
+    #   - postgres
 
 volumes:
   database:

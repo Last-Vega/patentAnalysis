@@ -19,6 +19,10 @@ api = Blueprint('api', __name__)
 #     s = initialTrain()
 #     return jsonify(result)
 
+@api.route('/test', methods=['POST'])
+def api_test():
+    return 'sucess'
+
 @api.route('/update', methods=['POST'])
 def update():
     latent_c = request.get_json()['companyZ']

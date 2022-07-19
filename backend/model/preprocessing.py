@@ -32,32 +32,33 @@ def mask_test_edges(adj):
     # Remove diagonal elements
     adj = adj - sp.dia_matrix((adj.diagonal()[np.newaxis, :], [0]), shape=adj.shape)
     adj.eliminate_zeros()
+    
     # Check that diag is zero:
     assert np.diag(adj.todense()).sum() == 0
 
-    adj_triu = sp.triu(adj)
-    adj_tuple = sparse_to_tuple(adj_triu)
-    edges = adj_tuple[0]
-    edges_all = sparse_to_tuple(adj)[0]
-    num_test = int(np.floor(edges.shape[0] / 10.))
-    num_val = int(np.floor(edges.shape[0] / 20.))
+    # adj_triu = sp.triu(adj)
+    # adj_tuple = sparse_to_tuple(adj_triu)
+    # edges = adj_tuple[0]
+    # edges_all = sparse_to_tuple(adj)[0]
+    # num_test = int(np.floor(edges.shape[0] / 10.))
+    # num_val = int(np.floor(edges.shape[0] / 20.))
     
-    # print(edges.shape[0])
-    # print(num_test)
-    # print(num_val)
-    all_edge_idx = list(range(edges.shape[0]))
-    np.random.shuffle(all_edge_idx)
-    val_edge_idx = all_edge_idx[:num_val]
-    test_edge_idx = all_edge_idx[num_val:(num_val + num_test)]
-    test_edges = edges[test_edge_idx]
-    val_edges = edges[val_edge_idx]
-    # print(edges)
-    # print(test_edge_idx)
-    # print(val_edge_idx)
-    # print(test_edges)
-    # print(val_edges)
-    train_edges = np.delete(edges, np.hstack([test_edge_idx, val_edge_idx]), axis=0)
-    # print(train_edges)
+    # # print(edges.shape[0])
+    # # print(num_test)
+    # # print(num_val)
+    # all_edge_idx = list(range(edges.shape[0]))
+    # np.random.shuffle(all_edge_idx)
+    # val_edge_idx = all_edge_idx[:num_val]
+    # test_edge_idx = all_edge_idx[num_val:(num_val + num_test)]
+    # test_edges = edges[test_edge_idx]
+    # val_edges = edges[val_edge_idx]
+    # # print(edges)
+    # # print(test_edge_idx)
+    # # print(val_edge_idx)
+    # # print(test_edges)
+    # # print(val_edges)
+    # train_edges = np.delete(edges, np.hstack([test_edge_idx, val_edge_idx]), axis=0)
+    # # print(train_edges)
 
     def ismember(a, b, tol=5):
         rows_close = np.all(np.round(a - b[:, None], tol) == 0, axis=-1)
@@ -105,11 +106,16 @@ def mask_test_edges(adj):
     # assert ~ismember(test_edges, train_edges)
     # assert ~ismember(val_edges, test_edges)
 
-    data = np.ones(train_edges.shape[0])
+    # data = np.ones(train_edges.shape[0])
 
     # Re-build adj matrix
-    adj_train = sp.csr_matrix((data, (train_edges[:, 0], train_edges[:, 1])), shape=adj.shape)
+    # adj_train = sp.csr_matrix((data, (train_edges[:, 0], train_edges[:, 1])), shape=adj.shape)
+    adj_train = sp.csr_matrix(adj)
+    print(adj_train.shape)
+    print(adj_train.T.shape)
+    # exit()
     adj_train = adj_train + adj_train.T
 
     # NOTE: these edge lists only contain single direction of edge!
-    return adj_train, train_edges, val_edges, val_edges_false, test_edges, test_edges_false
+    # return adj_train, train_edges, val_edges, val_edges_false, test_edges, test_edges_false
+    return adj_train

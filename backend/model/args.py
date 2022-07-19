@@ -3,7 +3,7 @@
 hidden1_dim:int = 4
 hidden2_dim:int = 2
 use_feature:bool = True
-num_epoch:int = 200
+num_epoch:int = 400
 learning_rate:float = 0.01
 
 # num_patent:int = 44564
