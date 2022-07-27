@@ -1,11 +1,23 @@
-FROM python:3.7
+# FROM python:3.7
+FROM nvcr.io/nvidia/pytorch:22.01-py3
 
 WORKDIR /app
 COPY . /app
 
-RUN pip install uwsgi \
-    && pip install -r requirements.txt
+# RUN pip install uwsgi \
+#     && pip install -r requirements.txt
+# RUN pip install uwsgi
+# RUN pip install torch
+# RUN pip install numpy 
+# RUN pip install cupy
+# RUN pip install scipy
+# RUN pip install networkx
 
-CMD uwsgi --ini uwsgi.ini
+RUN conda install uwsgi
+RUN pip install -r requirements.txt
+
+# CMD uwsgi --ini /app/uwsgi.ini
+
+CMD ["uwsgi", "--ini", "/app/uwsgi.ini"]
 
 EXPOSE 8080
