@@ -1,67 +1,67 @@
 version: "2.3"
 services:
-  frontend:
+  frontend_develop:
     build:
       context: .
-      # dockerfile: Dockerfile_vue
-      dockerfile: Dockerfile_nginx
-    container_name: "kumagai_front"
+      dockerfile: Dockerfile_vue
+      # dockerfile: Dockerfile_nginx
+    container_name: "kumagai_front_develop"
     volumes:
       - "./:/app"
       - "/app/frontend/node_modules"
       - "/app/.vscode"
       - "/app/.idea"
     # 本番環境のサーバーで使用
-    ports:
-      - "80:80"
+    # ports:
+    #   - "80:80"
     # depends_on:
     #   - backend
     # depends_on:
     #   - uwsgi
     stdin_open: true
 
-  # backend:
-  #   build:
-  #     context: .
-  #     dockerfile: Dockerfile_flask
-  #   container_name: "kumagai_back"
-  #   volumes:
-  #     - "./:/app"
-  #     - "/app/.vscode"
-  #     - "/app/.idea"
-  #   ports:
-  #     - "5000:5000"
-    
-  #   runtime: nvidia
-  #   environment:
-  #     NVIDIA_VISIBLE_DEVICES: all
-  #     NVIDIA_DRIVER_CAPABILITIES: all
-  #   stdin_open: true
-  #   tty: true
-    # depends_on:
-    #   - uwsgi
-
-
-  # 本番環境のサーバーで使用
-  uwsgi:
+  backend_develop:
     build:
       context: .
-      dockerfile: Dockerfile_uwsgi
-    container_name: "uwsgi"
+      dockerfile: Dockerfile_flask
+    container_name: "kumagai_back_develop"
     volumes:
       - "./:/app"
       - "/app/.vscode"
       - "/app/.idea"
-    # expose:
-    #   - "8080"
+    ports:
+      - "5000:5000"
+    
     runtime: nvidia
     environment:
       NVIDIA_VISIBLE_DEVICES: all
       NVIDIA_DRIVER_CAPABILITIES: all
     stdin_open: true
     tty: true
-  #   # depends_on:
-  #   #   - frontend
+    # depends_on:
+    #   - uwsgi
+
+
+  # 本番環境のサーバーで使用
+  # uwsgi:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile_uwsgi
+  #   container_name: "uwsgi"
+  #   volumes:
+  #     - "./:/app"
+  #     - "/app/.vscode"
+  #     - "/app/.idea"
+  #   # expose:
+  #   #   - "8080"
+  #   runtime: nvidia
+  #   environment:
+  #     NVIDIA_VISIBLE_DEVICES: all
+  #     NVIDIA_DRIVER_CAPABILITIES: all
+  #   stdin_open: true
+  #   tty: true
+  # #   # depends_on:
+  # #   #   - frontend
 
 
 volumes:
