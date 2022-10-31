@@ -49,12 +49,6 @@ export default {
   data () {
     return {
       options: chartOptions,
-      headers: [
-        { text: 'Title', value: 'title' },
-        { text: 'Authors', value: 'author' },
-        { text: 'Conference', value: 'conference' },
-        { text: 'Year', value: 'year' }
-      ],
       companyItems: companyTableData,
       termItems: termTableData,
       companyName: [],
