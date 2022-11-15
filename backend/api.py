@@ -40,7 +40,7 @@ def update():
     tensor_latentT = torch.tensor(connected, requires_grad=True, dtype=torch.float32)
 
     Z_c, Z_t, maxCCPath, maxCTPath = train(tensor_latentC, tensor_latentT, updateCompanyIndex, updateTermIndex)
-
+    print(Z_c[12])
     result = {'company': Z_c, 'term': Z_t, 'maxCCPath': maxCCPath, 'maxCTPath': maxCTPath}
     result = jsonify(result)
     return result

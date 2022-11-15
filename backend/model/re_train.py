@@ -32,15 +32,12 @@ def train(latentC, latentT, uCI, uTI):
     model, optimizer = feedbacked_model_init(adj_norm, graph_dim, bipartite_dim)
     adj_dict = criteria(adj_dict, uCI, latentC)
     bi_dict = criteria(bi_dict, uTI, latentT)
-    for e in range(2):
-        A_pred, Bi_pred = model(features, bi_adj_norm, latentC, latentT)
-        weighted_adj, weight_list = e_step(adj_dict, A_pred)
-        weighted_bi, weight_list_bi = e_step(bi_dict, Bi_pred)
-        Z_c, Z_t, model, optimizer = m_step(model, optimizer, weighted_adj, features, weighted_bi, latentC, latentT)
-    
-    # x = random.randint(0,100)
-    # print(x)
-    # torch.seed(x)
+    # for e in range(50):
+    A_pred, Bi_pred = model(features, bi_adj_norm, latentC, latentT)
+    weighted_adj, weight_list = e_step(adj_dict, A_pred)
+    weighted_bi, weight_list_bi = e_step(bi_dict, Bi_pred)
+    Z_c, Z_t, model, optimizer = m_step(model, optimizer, weighted_adj, features, weighted_bi, latentC, latentT)
+
     savePickle('weightAdj.list', weight_list)
     savePickle('weightBi.list', weight_list_bi)
     max_cc = list(adj_dict.keys())[weight_list.index(max(weight_list))]
@@ -96,7 +93,7 @@ def recommend():
 
     model, optimizer = model_init(adj_norm, graph_dim, bipartite_dim)
 
-    for epoch in range(100):
+    for epoch in range(200):
         A_pred, Bi_pred = model(features, bi_adj_norm)
         optimizer.zero_grad()
         loss = norm*F.binary_cross_entropy(A_pred.view(-1), adj_label.to_dense().view(-1).to(device), weight = weight_tensor.to(device)) + bi_norm*F.binary_cross_entropy(Bi_pred.view(-1), bi_adj_label.to_dense().view(-1).to(device), weight = bi_weight_tensor.to(device))
