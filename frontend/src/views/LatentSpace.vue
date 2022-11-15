@@ -128,7 +128,6 @@ export default {
           this.interpretation(response.data.maxCCPath, response.data.maxCTPath)
         })
         .catch(error => {
-          console.log('errorです')
           console.log(error)
           this.isShow = false
         })
