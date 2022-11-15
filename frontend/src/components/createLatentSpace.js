@@ -79,7 +79,8 @@ const chartOptions = {
             const point = this
             const index = point.index
             if (e.newPoint.x !== undefined) {
-              chartOptions.series[0].data[index] = [e.newPoint.x, e.newPoint.y]
+              // chartOptions.series[0].data[index] = [e.newPoint.x, e.newPoint.y]
+              chartOptions.series[0].data[index] = { x: e.newPoint.x, y: e.newPoint.y, company: e.target.company }
             }
             updateCompanyIndex.push(index)
           }
@@ -109,7 +110,8 @@ const chartOptions = {
             const point = this
             const index = point.index
             if (e.newPoint.x !== undefined) {
-              chartOptions.series[1].data[index] = [e.newPoint.x, e.newPoint.y]
+              // chartOptions.series[1].data[index] = [e.newPoint.x, e.newPoint.y]
+              chartOptions.series[1].data[index] = { x: e.newPoint.x, y: e.newPoint.y, term: e.target.term }
             }
             updateTermIndex.push(index)
           }
@@ -123,6 +125,11 @@ const chartOptions = {
         hover: {
           enabled: false
         }
+      },
+      dataLabels: {
+        enabled: true,
+        allowOverlap: true,
+        format: '{point.company}{point.term}'
       }
     }
   }

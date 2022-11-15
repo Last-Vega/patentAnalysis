@@ -3,7 +3,7 @@
     <Loading :flag="isShow" />
     <v-row no-gutters>
       <v-col cols="12" sm="9">
-        <div v-if="this.updateCompany.length > 0 || this.updateTerm.length > 0">
+        <div v-if="this.updateCompany.length >= 0 || this.updateTerm.length > 0">
             <div class="text-center">
                 <v-btn color="red lighten-2" dark @click="updateZ">
                   更新する
@@ -49,12 +49,6 @@ export default {
   data () {
     return {
       options: chartOptions,
-      headers: [
-        { text: 'Title', value: 'title' },
-        { text: 'Authors', value: 'author' },
-        { text: 'Conference', value: 'conference' },
-        { text: 'Year', value: 'year' }
-      ],
       companyItems: companyTableData,
       termItems: termTableData,
       companyName: [],
@@ -72,12 +66,19 @@ export default {
     }
   },
   methods: {
+    labelFormat (s) {
+      return s.replace('株式会社', '').slice(0, 3)
+    },
     makeScatter (company, term) {
       console.log(company)
-      this.companyXY = company
-      this.termXY = term
-      this.options.series[0].data = company
-      this.options.series[1].data = term
+      this.companyXY = company.map((v, i) => {
+        return { x: v[0], y: v[1], company: this.labelFormat(this.companyName[i]) }
+      })
+      this.termXY = term.map((v, i) => {
+        return { x: v[0], y: v[1], term: this.labelFormat(this.termName[i]) }
+      })
+      this.options.series[0].data = this.companyXY
+      this.options.series[1].data = this.termXY
     },
     interpretation (ccPath, ctPath) {
       const path = {
@@ -88,30 +89,34 @@ export default {
         F: 'Fターム',
         P: '-特許-'
       }
-      const CCElmArray = ccPath.split('')
-      const CTElmArray = ctPath.split('')
-
-      for (const elm of CCElmArray) {
-        console.log(elm)
-        this.CCContrib += path[elm]
-      }
-
-      for (const elm of CTElmArray) {
-        this.CTContrib += path[elm]
-      }
+      this.CTContrib = ctPath.split('').map(v => path[v]).join('')
+      this.CCContrib = ccPath.split('').map(v => path[v]).join('')
       console.log(this.CCContrib)
     },
     async updateZ () {
       this.isShow = true
       console.log(this.updateComapny)
       console.log(this.updateTerm)
+
+      // const rand = () => Math.random() * 6 - 3
+      // const company = this.companyXY.map(v => [rand(), rand()])
+      // const term = this.termXY.map(v => [rand(), rand()])
+      // this.makeScatter(company, term)
+      // this.isShow = false
+      // this.interpretation('CPTPC', 'CPYPT')
+
       const path = process.env.VUE_APP_BASE_URL + 'api/update'
       const postData = {
-        companyZ: this.options.series[0].data,
-        termZ: this.options.series[1].data,
+        // companyZ: this.options.series[0].data,
+        // termZ: this.options.series[1].data,
+        companyZ: this.options.series[0].data.map(v => [v.x, v.y]),
+        termZ: this.options.series[1].data.map(v => [v.x, v.y]),
         CompanyIndex: this.updateCompany,
         TermIndex: this.updateTerm
       }
+      // console.log(postData)
+      // console.log(postData.companyZ)
+      // console.log(postData.termZ)
       await this.$api
         .post(path, postData)
         .then(response => {
@@ -123,6 +128,7 @@ export default {
           this.interpretation(response.data.maxCCPath, response.data.maxCTPath)
         })
         .catch(error => {
+          console.log('errorです')
           console.log(error)
           this.isShow = false
         })
@@ -133,11 +139,19 @@ export default {
     const termData = termInfo.key
     for (let i = 0; i < companyData.length; i++) {
       this.companyName.push(companyData[i].company)
-      this.companyXY.push([companyData[i].x, companyData[i].y])
+      this.companyXY.push({
+        x: companyData[i].x,
+        y: companyData[i].y,
+        company: this.labelFormat(companyData[i].company)
+      })
     }
     for (let i = 0; i < termData.length; i++) {
       this.termName.push(termData[i].term)
-      this.termXY.push([termData[i].x, termData[i].y])
+      this.termXY.push({
+        x: termData[i].x,
+        y: termData[i].y,
+        term: this.labelFormat(termData[i].term)
+      })
     }
     console.log(this.companyXY)
     this.options.series[0].dataLabal = this.companyName

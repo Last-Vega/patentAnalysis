@@ -1,6 +1,6 @@
 <template>
 <v-app>
-  <highcharts :options="options" ref="chart"></highcharts>
+  <highcharts :options="options" ref="chart" style="height: 80vh"></highcharts>
   <v-container class="grey lighten-5">
     <v-row no-gutters>
         <v-col cols="12" sm="12">
