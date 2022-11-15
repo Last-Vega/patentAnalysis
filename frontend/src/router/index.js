@@ -2,6 +2,7 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import LatentSpace from '../views/LatentSpace.vue'
 import Compare from '../views/Compare.vue'
+import svgSample from '../views/svgSample.vue'
 Vue.use(VueRouter)
 
 const routes = [
@@ -14,6 +15,11 @@ const routes = [
     path: '/vs',
     name: 'ObayashiKajima',
     component: Compare
+  },
+  {
+    path: '/svg',
+    name: 'svg',
+    component: svgSample
   }
 
 ]

@@ -16,6 +16,7 @@
     "highcharts": "^9.3.2",
     "highcharts-draggable-points": "^2.0.10",
     "highcharts-vue": "^1.4.0",
+    "three": "^0.145.0",
     "vue": "^2.6.11",
     "vue-router": "^3.2.0",
     "vuetify": "^2.4.0",

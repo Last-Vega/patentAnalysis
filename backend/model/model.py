@@ -161,6 +161,7 @@ class RecommendViaFeedback(nn.Module):
 		gaussian_noise = torch.randn(bi_networks.size(0), hidden2_dim).to(device)
 		z_t = gaussian_noise*self.siguma + self.mu
 		Z = z_t
+		# return z_c, z_t
 		return Z
 	
 	def forward(self, X, bi_networks, latentC, latentT):

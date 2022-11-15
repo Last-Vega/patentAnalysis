@@ -38,8 +38,8 @@ services:
   #     NVIDIA_DRIVER_CAPABILITIES: all
   #   stdin_open: true
   #   tty: true
-    # depends_on:
-    #   - uwsgi
+  #   depends_on:
+  #     - uwsgi
 
 
   # 本番環境のサーバーで使用
@@ -52,6 +52,7 @@ services:
       - "./:/app"
       - "/app/.vscode"
       - "/app/.idea"
+      # - "/app/nginx/work/nginx.conf"
     # expose:
     #   - "8080"
     runtime: nvidia

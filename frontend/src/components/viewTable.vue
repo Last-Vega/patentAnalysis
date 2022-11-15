@@ -176,8 +176,8 @@ export default {
     async submit () {
       const path = process.env.VUE_APP_BASE_URL + 'api/search'
       const postData = {
-        companyZ: this.companyZ,
-        termZ: this.termZ,
+        companyZ: this.companyZ.map(v => [v.x, v.y]),
+        termZ: this.termZ.map(v => [v.x, v.y]),
         company: this.companyName,
         term: this.termName,
         query: this.query
