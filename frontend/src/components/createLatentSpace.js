@@ -16,6 +16,11 @@ const updateCompanyIndex = []
 const updateTermIndex = []
 
 const chartOptions = {
+  chart: {
+    width: Math.min(window.innerHeight, window.innerWidth) * 0.8,
+    height: 100 + '%',
+    zoomType: 'xy'
+  },
   tooltip: {
     useHTML: true,
     formatter: function () {
@@ -38,12 +43,16 @@ const chartOptions = {
     // min: -1,
     // max: 1,
     gridLineWidth: 1,
-    tickPixelInterval: 25
+    // tickPixelInterval: 25
+    minorTickInterval: 0.1,
+    tickInterval: 0.2
   },
   yAxis: {
     // min: -1,
     // max: 1,
-    tickPixelInterval: 50
+    // tickPixelInterval: 50
+    minorTickInterval: 0.1,
+    tickInterval: 0.2
   },
   legend: {
     layout: 'vertical',
@@ -79,7 +88,6 @@ const chartOptions = {
             const point = this
             const index = point.index
             if (e.newPoint.x !== undefined) {
-              // chartOptions.series[0].data[index] = [e.newPoint.x, e.newPoint.y]
               chartOptions.series[0].data[index] = { x: e.newPoint.x, y: e.newPoint.y, company: e.target.company }
             }
             updateCompanyIndex.push(index)
@@ -110,7 +118,6 @@ const chartOptions = {
             const point = this
             const index = point.index
             if (e.newPoint.x !== undefined) {
-              // chartOptions.series[1].data[index] = [e.newPoint.x, e.newPoint.y]
               chartOptions.series[1].data[index] = { x: e.newPoint.x, y: e.newPoint.y, term: e.target.term }
             }
             updateTermIndex.push(index)

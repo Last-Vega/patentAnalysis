@@ -10,7 +10,14 @@
                 </v-btn>
             </div>
           </div>
-        <ViewLatentSpace :options="options" :companyItems="CCContrib" :termItems="CTContrib" />
+        <!-- <ViewLatentSpace :options="options" :companyItems="CCContrib" :termItems="CTContrib" @toggle="toggle()"/> -->
+                <ViewLatentSpace
+          :options="options"
+          :companyItems="CCContrib"
+          :termItems="CTContrib"
+          @toggle="toggle"
+          @change-label="changeLabel"
+          />
       </v-col>
 
       <v-col cols="12" sm="3">
@@ -49,6 +56,7 @@ export default {
   data () {
     return {
       options: chartOptions,
+      isDraggable: true,
       companyItems: companyTableData,
       termItems: termTableData,
       companyName: [],
@@ -66,8 +74,30 @@ export default {
     }
   },
   methods: {
-    labelFormat (s) {
-      return s.replace('株式会社', '').slice(0, 3)
+    changeLabel (check) {
+      const end = check ? 100 : 3
+      this.companyXY.forEach((v, i) => {
+        v.company = this.labelFormat(this.companyName[i], end)
+      })
+      this.termXY.forEach((v, i) => {
+        v.term = this.labelFormat(this.termName[i], end)
+      })
+    },
+    toggle () {
+      this.isDraggable = !this.isDraggable
+      this.options.series[0].dragDrop = {
+        draggableX: this.isDraggable,
+        draggableY: this.isDraggable,
+        liveRedraw: this.isDraggable
+      }
+      this.options.series[1].dragDrop = {
+        draggableX: this.isDraggable,
+        draggableY: this.isDraggable,
+        liveRedraw: this.isDraggable
+      }
+    },
+    labelFormat (s, end = 3) {
+      return s.replace('株式会社', '').slice(0, end)
     },
     makeScatter (company, term) {
       console.log(company)
