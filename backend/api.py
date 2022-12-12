@@ -116,9 +116,10 @@ def vsupdate():
     result = jsonify(result)
     return result
 
-# @api.route('/printadj', methods=['POST'])
-# def print_adj():
-#     adj = loadBinary(f'{temp_folder}/W_adj0122.adj')
-    
-#     return result
+@api.route('/printadj', methods=['POST'])
+def print_adj():
+    adj = loadBinary(f'{temp_folder}/W_adj0122.adj')
+    result = {'adj': adj.toarray().tolist()}
+    result = jsonify(result)
+    return result
     
