@@ -4,7 +4,7 @@ import torch
 import numpy as np
 from .model.re_train import train, recommend, vstrain
 from .model.train import initialTrain
-from .util import calcCCDistance, calcCTDistance, calcTTDistance, appendElm, calcCTDistanceForRecommend, loadBinary, appendElmForRecommend
+from .util import calcCCDistance, calcCTDistance, calcTTDistance, appendElm, calcCTDistanceForRecommend, loadBinary, appendElmForRecommend, loadBinary
 # coding: utf-8
 from . import app
 temp_folder = app.config['TEMP_FOLDER']
@@ -115,3 +115,10 @@ def vsupdate():
     result = {'company': Z_c, 'term': Z_t, 'maxCCPath': maxCCPath, 'maxCTPath': maxCTPath}
     result = jsonify(result)
     return result
+
+# @api.route('/printadj', methods=['POST'])
+# def print_adj():
+#     adj = loadBinary(f'{temp_folder}/W_adj0122.adj')
+    
+#     return result
+    

@@ -7,6 +7,7 @@ import scipy.sparse as sp
 import numpy as np
 from scipy.spatial import distance
 from .preprocessing import *
+import codecs
 
 from .args import *
 from .model import Recommendation, RecommendViaFeedback
@@ -105,7 +106,7 @@ def e_step(adj_dict, pred):
         size = original_adj.shape
 
     weight_list = calc_metapath_weight(contribution_rate)
-    # print(weight_list)
+    print(weight_list, file=codecs.open('./gorilla.txt', 'a+', 'utf-8'))
     # weighted_adj = torch.zeros((50,50))
     weighted_adj = torch.zeros((size[0],size[1])).to('cpu')
     for weight, original_adj in zip(weight_list, adj_dict.values()):
@@ -126,26 +127,25 @@ def m_step(model, optimizer, adj, features, bi_adj, latentC, latentT):
     model.train()
     for epoch in range(num_epoch):
         A_pred, Bi_pred = model(features, bi_adj_norm, latentC, latentT)
-        # A_pred = A_pred.to('cpu')
-        # Bi_pred = Bi_pred.to('cpu')
         optimizer.zero_grad()
         loss = norm*F.binary_cross_entropy(A_pred.view(-1), adj_label.to_dense().view(-1).to(device), weight = weight_tensor.to(device)) + bi_norm*F.binary_cross_entropy(Bi_pred.view(-1), bi_adj_label.to_dense().view(-1).to(device), weight = bi_weight_tensor.to(device))
         kl_divergence1 = 0.5/ A_pred.size(0) * (1 + 2*model.logstd - model.mean**2 - torch.exp(model.logstd)**2).sum(1).mean()
-        kl_divergence2 = 0.5/ Bi_pred.size(0) * (1 + 2*model.siguma - model.mu**2 - model.siguma**2).sum(1).mean()
+        kl_divergence2 = 0.5/ Bi_pred.size(0) * (1 + 2*model.siguma - model.mu**2 - torch.exp(model.siguma**2)).sum(1).mean()
         loss -= kl_divergence1
         loss -= kl_divergence2
         loss.backward()
         optimizer.step()
-        print(loss)
+        # print(loss)
+        # print(model.Z_c[12], file=codecs.open('./gorilla.txt', 'a+', 'utf-8'))
 
     model.eval()
-    # Z_c, Z_t = model.prediction(features, bi_adj_norm)
-    # Z_c = Z_c.to('cpu').detach().numpy().copy().tolist()
-    # Z_t = Z_t.to('cpu').detach().numpy().copy().tolist()
-    Z = model.prediction(features, bi_adj_norm).to('cpu').detach().numpy().copy().tolist()
+    # Z = model.prediction(features, bi_adj_norm).to('cpu').detach().numpy().copy().tolist()
+    # Z_c = Z[:graph_dim]
+    # Z_t = Z[graph_dim:]
+    
+    Z = model.prediction(features, bi_adj_norm)
     Z_c = Z[:graph_dim]
     Z_t = Z[graph_dim:]
-
     return Z_c, Z_t, model, optimizer
 
 def criteria(adj_dict, updateList, latentData):

@@ -111,8 +111,8 @@ def mask_test_edges(adj):
     # Re-build adj matrix
     # adj_train = sp.csr_matrix((data, (train_edges[:, 0], train_edges[:, 1])), shape=adj.shape)
     adj_train = sp.csr_matrix(adj)
-    print(adj_train.shape)
-    print(adj_train.T.shape)
+    # print(adj_train.shape)
+    # print(adj_train.T.shape)
     # exit()
     adj_train = adj_train + adj_train.T
 
