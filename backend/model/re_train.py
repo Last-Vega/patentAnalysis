@@ -19,7 +19,6 @@ def savePickle(f, data):
     return
 
 def train(latentC, latentT, uCI, uTI):
-    fix_seed(42)
     from .input_data import adj, bi_adj, features, adj_dict, bi_dict
 
     weight_tensor, adj_norm, norm, adj_label, adj_orig = prepare_adj_for_training(adj)
@@ -28,11 +27,15 @@ def train(latentC, latentT, uCI, uTI):
 
     bi_weight_tensor, bi_adj_norm, bi_norm, bi_adj_label, bi_adj_orig = prepare_adj_for_training(bi_adj)
     bipartite_dim = bi_adj.shape[1]
-
+    fix_seed(42)
     model, optimizer = feedbacked_model_init(adj_norm, graph_dim, bipartite_dim)
     adj_dict = criteria(adj_dict, uCI, latentC)
     bi_dict = criteria(bi_dict, uTI, latentT)
-    # for e in range(50):
+    # for e in range(10):
+    #     A_pred, Bi_pred = model(features, bi_adj_norm, latentC, latentT)
+    #     weighted_adj, weight_list = e_step(adj_dict, A_pred)
+    #     weighted_bi, weight_list_bi = e_step(bi_dict, Bi_pred)
+    #     Z_c, Z_t, model, optimizer = m_step(model, optimizer, weighted_adj, features, weighted_bi, latentC, latentT)
     A_pred, Bi_pred = model(features, bi_adj_norm, latentC, latentT)
     weighted_adj, weight_list = e_step(adj_dict, A_pred)
     weighted_bi, weight_list_bi = e_step(bi_dict, Bi_pred)
@@ -98,7 +101,7 @@ def recommend():
         optimizer.zero_grad()
         loss = norm*F.binary_cross_entropy(A_pred.view(-1), adj_label.to_dense().view(-1).to(device), weight = weight_tensor.to(device)) + bi_norm*F.binary_cross_entropy(Bi_pred.view(-1), bi_adj_label.to_dense().view(-1).to(device), weight = bi_weight_tensor.to(device))
         kl_divergence1 = 0.5/ A_pred.size(0) * (1 + 2*model.logstd - model.mean**2 - torch.exp(model.logstd)**2).sum(1).mean()
-        kl_divergence2 = 0.5/ Bi_pred.size(0) * (1 + 2*model.siguma - model.mu**2 - model.siguma**2).sum(1).mean()
+        kl_divergence2 = 0.5/ Bi_pred.size(0) * (1 + 2*model.siguma - model.mu**2 - torch.exp(model.siguma)**2).sum(1).mean()
         loss -= kl_divergence1
         loss -= kl_divergence2
         loss.backward()

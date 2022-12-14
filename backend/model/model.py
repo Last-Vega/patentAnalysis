@@ -129,7 +129,7 @@ class RecommendViaFeedback(nn.Module):
 		self.logstd = self.gcn_logstddev(hidden)
 		gaussian_noise = torch.randn(X.size(0), hidden2_dim).to(device)
 		sampled_z = gaussian_noise*torch.exp(self.logstd) + self.mean
-		sampled_z = latentC
+		# sampled_z = latentC
 		z = sampled_z
 		self.Z_c = z
 		return z
@@ -142,7 +142,7 @@ class RecommendViaFeedback(nn.Module):
 		self.siguma = torch.exp(self.mu)
 		gaussian_noise = torch.randn(bi_networks.size(0), hidden2_dim).to(device)
 		z = gaussian_noise*self.siguma + self.mu
-		z = latentT
+		# z = latentT
 		self.Z_t = z
 		return z
 	
@@ -160,8 +160,8 @@ class RecommendViaFeedback(nn.Module):
 		self.siguma = torch.exp(self.mu)
 		gaussian_noise = torch.randn(bi_networks.size(0), hidden2_dim).to(device)
 		z_t = gaussian_noise*self.siguma + self.mu
-		# Z = z_t
-		Z = z_c.to('cpu').detach().numpy().copy().tolist() + z_t[50:].to('cpu').detach().numpy().copy().tolist()
+		Z = z_t.to('cpu').detach().numpy().copy().tolist()
+		# Z = z_c.to('cpu').detach().numpy().copy().tolist() + z_t[50:].to('cpu').detach().numpy().copy().tolist()
 		return Z
 	
 	def forward(self, X, bi_networks, latentC, latentT):
