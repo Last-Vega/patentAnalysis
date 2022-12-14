@@ -31,12 +31,14 @@ def forCompare():
 
 f_name:str = './W_adj.adj'
 
-f_name = f'{temp_folder}/W_adj0122.adj'
+# f_name = f'{temp_folder}/W_adj0122.adj'
+f_name = f'{temp_folder}/W_adj1213.adj'
 adj:csr_matrix = loadBinary(f_name)
 
 features:lil_matrix = createFeatures(adj)
 
-f_name:str = f'{temp_folder}/W_bi0122.adj'
+# f_name:str = f'{temp_folder}/W_bi0122.adj'
+f_name:str = f'{temp_folder}/W_bi1213.adj'
 bi_adj:csr_matrix = loadBinary(f_name)
 
 f_name = f'{temp_folder}/adj0122.dict'
