@@ -19,6 +19,7 @@ def savePickle(f, data):
     return
 
 def train(latentC, latentT, uCI, uTI):
+    fix_seed(42)
     from .input_data import adj, bi_adj, features, adj_dict, bi_dict
 
     weight_tensor, adj_norm, norm, adj_label, adj_orig = prepare_adj_for_training(adj)
@@ -27,7 +28,6 @@ def train(latentC, latentT, uCI, uTI):
 
     bi_weight_tensor, bi_adj_norm, bi_norm, bi_adj_label, bi_adj_orig = prepare_adj_for_training(bi_adj)
     bipartite_dim = bi_adj.shape[1]
-    fix_seed(42)
     model, optimizer = feedbacked_model_init(adj_norm, graph_dim, bipartite_dim)
     adj_dict = criteria(adj_dict, uCI, latentC)
     bi_dict = criteria(bi_dict, uTI, latentT)
