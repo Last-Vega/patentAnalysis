@@ -9,12 +9,14 @@ app = Flask(__name__,
 
 app.config.from_object('backend.config.BaseConfig')
 
-# from .db_schema import db
-# db.drop_all()
-# db.create_all()
 
-# from .seedings import seed
-# seed()
+from .table import db
+# init_create()
+db.drop_all()
+db.create_all()
+
+from .seeding import seed
+seed()
 
 from flask_jwt_extended import JWTManager
 app.config['JWT_SECRET_KEY'] = 'seecret'

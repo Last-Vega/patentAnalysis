@@ -16,8 +16,8 @@ services:
       - "80:80"
     # depends_on:
     #   - backend
-    # depends_on:
-    #   - uwsgi
+    depends_on:
+      - uwsgi
     stdin_open: true
 
   # backend:
@@ -41,6 +41,20 @@ services:
   #   depends_on:
   #     - uwsgi
 
+  postgres:
+    image: postgres
+    container_name: "postgres"
+    volumes:
+      - "database:/var/lib/postgresql/data"
+    expose:
+      - "5432"
+    environment:
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=pass
+      - POSTGRES_DB=kumagai
+    restart: always
+    stdin_open: true
+
 
   # 本番環境のサーバーで使用
   uwsgi:
@@ -59,10 +73,14 @@ services:
     environment:
       NVIDIA_VISIBLE_DEVICES: all
       NVIDIA_DRIVER_CAPABILITIES: all
+      DATABASE_USER: root
+      DATABASE_HOST: postgres
+      DATABASE_PASSWORD: pass
+      DATABASE_NAME: kumagai
     stdin_open: true
     tty: true
-  #   # depends_on:
-  #   #   - frontend
+    depends_on:
+      - postgres
 
 
 volumes:

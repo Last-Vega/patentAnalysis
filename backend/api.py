@@ -1,5 +1,6 @@
 # from unittest import result
 from flask import Blueprint, jsonify, request
+from .table import *
 import torch
 import numpy as np
 from .model.re_train import train, recommend, vstrain
@@ -21,7 +22,16 @@ api = Blueprint('api', __name__)
 
 @api.route('/test', methods=['POST'])
 def api_test():
-    return 'sucess'
+    return 'success'
+
+
+@api.route('/test_db', methods=['POST'])
+def api_testdb():
+    # test_list = db.session.query(Test).all()
+    # test_dict = [test.to_dict() for test in test_list]
+    # return jsonify(test_dict)
+    result = {'message': str(type(db))}
+    return jsonify(result)
 
 @api.route('/update', methods=['POST'])
 def update():
