@@ -17,40 +17,26 @@ const updateTermIndex = []
 
 const chartOptions = {
   chart: {
-    width: Math.min(window.innerHeight, window.innerWidth) * 0.8,
+    width: Math.min(window.innerHeight, window.innerWidth) * 1.0,
     height: 100 + '%',
     zoomType: 'xy'
   },
   tooltip: {
     useHTML: true,
     formatter: function () {
-      // console.log(this.series.data.length)
-      const flag = this.series.data.length
-      const wrd = ''
-      if (flag <= 50) {
-        const index = this.series.data.indexOf(this.point)
-        const wrd = chartOptions.series[0].dataLabal[index]
-        return wrd
-      } else if (flag > 50) {
-        const index = this.series.data.indexOf(this.point)
-        const wrd = chartOptions.series[1].dataLabal[index]
-        return wrd
-      }
-      return wrd
+      return this.point.label
     }
   },
   xAxis: {
     // min: -1,
     // max: 1,
     gridLineWidth: 1,
-    // tickPixelInterval: 25
     minorTickInterval: 0.1,
     tickInterval: 0.2
   },
   yAxis: {
     // min: -1,
     // max: 1,
-    // tickPixelInterval: 50
     minorTickInterval: 0.1,
     tickInterval: 0.2
   },
@@ -79,16 +65,13 @@ const chartOptions = {
       },
       point: {
         events: {
-          mouseOver () {
-            const point = this
-            const index = point.index
-            companyTableData.company = chartOptions.series[0].dataLabal[index]
-          },
           drop: function (e) {
             const point = this
-            const index = point.index
+            // point.index は数値指定で点を移動させると変わってしまうので独自のdataIndexを使用
+            const index = point.dataIndex
             if (e.newPoint.x !== undefined) {
-              chartOptions.series[0].data[index] = { x: e.newPoint.x, y: e.newPoint.y, company: e.target.company }
+              chartOptions.series[0].data[index].x = e.newPoint.x
+              chartOptions.series[0].data[index].y = e.newPoint.y
             }
             updateCompanyIndex.push(index)
           }
@@ -109,16 +92,13 @@ const chartOptions = {
       },
       point: {
         events: {
-          mouseOver () {
-            const point = this
-            const index = point.index
-            termTableData.term = chartOptions.series[1].dataLabal[index]
-          },
           drop: function (e) {
             const point = this
-            const index = point.index
+            // point.index は数値指定で点を移動させると変わってしまうので独自のdataIndexを使用
+            const index = point.dataIndex
             if (e.newPoint.x !== undefined) {
-              chartOptions.series[1].data[index] = { x: e.newPoint.x, y: e.newPoint.y, term: e.target.term }
+              chartOptions.series[1].data[index].x = e.newPoint.x
+              chartOptions.series[1].data[index].y = e.newPoint.y
             }
             updateTermIndex.push(index)
           }
@@ -133,6 +113,7 @@ const chartOptions = {
           enabled: false
         }
       },
+
       dataLabels: {
         enabled: true,
         allowOverlap: true,
@@ -142,4 +123,10 @@ const chartOptions = {
   }
 }
 
-export { companyTableData, termTableData, chartOptions, updateCompanyIndex, updateTermIndex }
+export {
+  companyTableData,
+  termTableData,
+  chartOptions,
+  updateCompanyIndex,
+  updateTermIndex
+}

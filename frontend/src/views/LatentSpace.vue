@@ -2,16 +2,15 @@
   <v-app>
     <Loading :flag="isShow" />
     <v-row no-gutters>
-      <v-col cols="12" sm="9">
-        <div v-if="this.updateCompany.length >= 0 || this.updateTerm.length > 0">
+      <v-col cols="12" sm="8">
+        <div v-if="this.updateCompany.length > 0 || this.updateTerm.length > 0">
             <div class="text-center">
                 <v-btn color="red lighten-2" dark @click="updateZ">
                   更新する
                 </v-btn>
             </div>
           </div>
-        <!-- <ViewLatentSpace :options="options" :companyItems="CCContrib" :termItems="CTContrib" @toggle="toggle()"/> -->
-                <ViewLatentSpace
+        <ViewLatentSpace
           :options="options"
           :companyItems="CCContrib"
           :termItems="CTContrib"
@@ -20,7 +19,90 @@
           />
       </v-col>
 
-      <v-col cols="12" sm="3">
+      <v-col cols="12" sm="4">
+
+        <!-- データの座標一覧 -->
+        <v-simple-table dense fixed-header height="300px">
+          <template v-slot:default>
+            <caption>
+              要素の座標
+            </caption>
+            <thead>
+              <tr>
+                <th class="text-left">name</th>
+                <th class="text-left">X</th>
+                <th class="text-left">Y</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="item in companyXY" :key="item.dataIndex">
+                <td>{{ item.label }}</td>
+                <td class="text-right">
+                  <v-text-field
+                    type="number"
+                    v-model.number="item.x"
+                    @change="addUpdateIndex('company', item.dataIndex)"
+                  />
+                </td>
+                <td class="text-right">
+                  <v-text-field
+                    type="number"
+                    v-model.number="item.y"
+                    @change="addUpdateIndex('company', item.dataIndex)"
+                  />
+                </td>
+              </tr>
+            </tbody>
+          </template>
+        </v-simple-table>
+
+        <hr style="margin: 1rem 0;">
+
+        <!-- 指定場所に移動 -->
+        <v-simple-table dense fixed-header>
+          <template v-slot:default>
+            <caption>
+              指定された場所に要素を移動する
+            </caption>
+            <tbody>
+              <tr>
+                <td>
+                  移動する要素
+                </td>
+                <td>
+                  <v-autocomplete
+                    v-model="fromPointName"
+                    :items="companyName.concat(termName)"
+                    dense
+                    filled
+                  ></v-autocomplete>
+                </td>
+                <td></td>
+              </tr>
+              <tr>
+                <td>
+                  移動先の要素
+                </td>
+                <td>
+                <v-autocomplete
+                  v-model="toPointName"
+                  :items="companyName.concat(termName)"
+                  dense
+                  filled
+                ></v-autocomplete>
+                </td>
+                <td>
+                  <v-btn v-on:click="movePoint">
+                    移動
+                  </v-btn>
+                </td>
+              </tr>
+            </tbody>
+          </template>
+        </v-simple-table>
+
+        <hr style="margin: 1rem 0;">
+
         <ViewTabel :companyName="companyName" :termName="termName" :companyZ="this.options.series[0].data" :termZ="this.options.series[1].data" />
       </v-col>
     </v-row>
@@ -70,10 +152,60 @@ export default {
       maxCCPath: '',
       maxCTPath: '',
       CCContrib: '',
-      CTContrib: ''
+      CTContrib: '',
+      fromPointName: '',
+      toPointName: '',
+      history: []
     }
   },
   methods: {
+    addUpdateIndex (type, idx) {
+      if (type === 'company') {
+        if (!this.updateCompany.includes(idx)) {
+          this.updateCompany.push(idx)
+        }
+      } else if (type === 'term') {
+        if (!this.updateTerm.includes(idx)) {
+          this.updateTerm.push(idx)
+        }
+      }
+    },
+    movePoint () {
+      // 選択された要素のindex取得
+      const concatName = this.companyName.concat(this.termName)
+      const toIdx = concatName.indexOf(this.toPointName)
+      const fromIdx = concatName.indexOf(this.fromPointName)
+      if (toIdx === -1 || fromIdx === -1) {
+        return
+      }
+
+      // 移動先の座標取得
+      const { x, y } = ((toIdx) => {
+        if (toIdx < this.companyName.length) {
+          const { x, y } = this.companyXY[toIdx]
+          return { x, y }
+        } else {
+          const { x, y } = this.termXY[toIdx - this.companyName.length]
+          return { x, y }
+        }
+      })(toIdx)
+
+      // 移動させるデータを取得（ + updateIndex に追加）
+      const fromData = ((fromIdx) => {
+        if (fromIdx < this.companyName.length) {
+          this.addUpdateIndex('company', fromIdx)
+          return this.companyXY[fromIdx]
+        } else {
+          const idx = fromIdx - this.companyName.length
+          this.addUpdateIndex('term', idx)
+          return this.termXY[idx]
+        }
+      })(fromIdx)
+
+      // データの座標を設定
+      fromData.x = x
+      fromData.y = y
+    },
     changeLabel (check) {
       const end = check ? 100 : 3
       this.companyXY.forEach((v, i) => {
@@ -102,10 +234,22 @@ export default {
     makeScatter (company, term) {
       console.log(company)
       this.companyXY = company.map((v, i) => {
-        return { x: v[0], y: v[1], company: this.labelFormat(this.companyName[i]) }
+        return {
+          dataIndex: i,
+          label: this.companyName[i],
+          x: v[0],
+          y: v[1],
+          company: this.labelFormat(this.companyName[i])
+        }
       })
       this.termXY = term.map((v, i) => {
-        return { x: v[0], y: v[1], term: this.labelFormat(this.termName[i]) }
+        return {
+          dataIndex: i,
+          label: this.termName[i],
+          x: v[0],
+          y: v[1],
+          term: this.labelFormat(this.termName[i])
+        }
       })
       this.options.series[0].data = this.companyXY
       this.options.series[1].data = this.termXY
@@ -125,28 +269,16 @@ export default {
     },
     async updateZ () {
       this.isShow = true
-      console.log(this.updateComapny)
-      console.log(this.updateTerm)
-
-      // const rand = () => Math.random() * 6 - 3
-      // const company = this.companyXY.map(v => [rand(), rand()])
-      // const term = this.termXY.map(v => [rand(), rand()])
-      // this.makeScatter(company, term)
-      // this.isShow = false
-      // this.interpretation('CPTPC', 'CPYPT')
 
       const path = process.env.VUE_APP_BASE_URL + 'api/update'
       const postData = {
-        // companyZ: this.options.series[0].data,
-        // termZ: this.options.series[1].data,
         companyZ: this.options.series[0].data.map(v => [v.x, v.y]),
         termZ: this.options.series[1].data.map(v => [v.x, v.y]),
         CompanyIndex: this.updateCompany,
         TermIndex: this.updateTerm
       }
       // console.log(postData)
-      // console.log(postData.companyZ)
-      // console.log(postData.termZ)
+
       await this.$api
         .post(path, postData)
         .then(response => {
@@ -169,20 +301,24 @@ export default {
     for (let i = 0; i < companyData.length; i++) {
       this.companyName.push(companyData[i].company)
       this.companyXY.push({
+        dataIndex: i,
         x: companyData[i].x,
         y: companyData[i].y,
+        label: companyData[i].company,
         company: this.labelFormat(companyData[i].company)
       })
     }
     for (let i = 0; i < termData.length; i++) {
       this.termName.push(termData[i].term)
       this.termXY.push({
+        dataIndex: i,
         x: termData[i].x,
         y: termData[i].y,
+        label: termData[i].term,
         term: this.labelFormat(termData[i].term)
       })
     }
-    console.log(this.companyXY)
+    // console.log(this.companyXY)
     this.options.series[0].dataLabal = this.companyName
     this.options.series[0].data = this.companyXY
     this.options.series[1].dataLabal = this.termName
