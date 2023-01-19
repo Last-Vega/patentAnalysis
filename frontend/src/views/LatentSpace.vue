@@ -293,36 +293,82 @@ export default {
           console.log(error)
           this.isShow = false
         })
+    },
+    prep (companyData, termData) {
+      for (let i = 0; i < companyData.length; i++) {
+        this.companyName.push(companyData[i].company)
+        this.companyXY.push({
+          dataIndex: i,
+          x: companyData[i].x,
+          y: companyData[i].y,
+          label: companyData[i].company,
+          company: this.labelFormat(companyData[i].company)
+        })
+      }
+      for (let i = 0; i < termData.length; i++) {
+        this.termName.push(termData[i].term)
+        this.termXY.push({
+          dataIndex: i,
+          x: termData[i].x,
+          y: termData[i].y,
+          label: termData[i].term,
+          term: this.labelFormat(termData[i].term)
+        })
+      }
+      // console.log(this.companyXY)
+      this.options.series[0].dataLabal = this.companyName
+      this.options.series[0].data = this.companyXY
+      this.options.series[1].dataLabal = this.termName
+      this.options.series[1].data = this.termXY
     }
   },
-  created () {
-    const companyData = companyInfo.key
-    const termData = termInfo.key
-    for (let i = 0; i < companyData.length; i++) {
-      this.companyName.push(companyData[i].company)
-      this.companyXY.push({
-        dataIndex: i,
-        x: companyData[i].x,
-        y: companyData[i].y,
-        label: companyData[i].company,
-        company: this.labelFormat(companyData[i].company)
+  async created () {
+    const path = process.env.VUE_APP_BASE_URL + 'api/latent'
+    await this.$api
+      .post(path)
+      .then(response => {
+        if (response.data.flag === true) {
+          const companyData = response.data.companyInfo.key
+          const termData = response.data.termInfo.key
+          this.prep(companyData, termData)
+        } else {
+          const companyData = companyInfo.key
+          const termData = termInfo.key
+          this.prep(companyData, termData)
+        }
       })
-    }
-    for (let i = 0; i < termData.length; i++) {
-      this.termName.push(termData[i].term)
-      this.termXY.push({
-        dataIndex: i,
-        x: termData[i].x,
-        y: termData[i].y,
-        label: termData[i].term,
-        term: this.labelFormat(termData[i].term)
+      .catch(error => {
+        console.log(error)
+        this.isShow = false
       })
-    }
-    // console.log(this.companyXY)
-    this.options.series[0].dataLabal = this.companyName
-    this.options.series[0].data = this.companyXY
-    this.options.series[1].dataLabal = this.termName
-    this.options.series[1].data = this.termXY
+
+    // const companyData = companyInfo.key
+    // const termData = termInfo.key
+    // for (let i = 0; i < companyData.length; i++) {
+    //   this.companyName.push(companyData[i].company)
+    //   this.companyXY.push({
+    //     dataIndex: i,
+    //     x: companyData[i].x,
+    //     y: companyData[i].y,
+    //     label: companyData[i].company,
+    //     company: this.labelFormat(companyData[i].company)
+    //   })
+    // }
+    // for (let i = 0; i < termData.length; i++) {
+    //   this.termName.push(termData[i].term)
+    //   this.termXY.push({
+    //     dataIndex: i,
+    //     x: termData[i].x,
+    //     y: termData[i].y,
+    //     label: termData[i].term,
+    //     term: this.labelFormat(termData[i].term)
+    //   })
+    // }
+    // // console.log(this.companyXY)
+    // this.options.series[0].dataLabal = this.companyName
+    // this.options.series[0].data = this.companyXY
+    // this.options.series[1].dataLabal = this.termName
+    // this.options.series[1].data = this.termXY
   }
 }
 </script>
