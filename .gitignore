@@ -10,6 +10,7 @@ __pycache__/
 bi0123-1.dict
 *.dict
 *.txt
+temp
 
 # Distribution / packaging
 .Python
