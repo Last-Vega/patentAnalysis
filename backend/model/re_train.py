@@ -1,13 +1,15 @@
 import networkx as nx
-import matplotlib.pyplot as plt
 import numpy as np
 from scipy.sparse import csr_matrix, lil_matrix
 import torch
 import torch.nn.functional as F
 from .args import *
+from ..table import *
+from sqlalchemy import desc
+import datetime
 import os
 import pickle
-from .util import fix_seed, prepare_adj_for_training, prepare_features_for_training, feedbacked_model_init, e_step, m_step, model_init, criteria
+from .util import fix_seed, prepare_adj_for_training, prepare_features_for_training, feedbacked_model_init, e_step, m_step, model_init, criteria, addLatentFile, addMetapathFile, addModelFile, addCriteriaFile
 from .. import app
 temp_folder = app.config['TEMP_FOLDER']
 
@@ -16,6 +18,9 @@ device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 def savePickle(f, data):
     with open(f'{temp_folder}/{f}', 'wb') as wf:
         pickle.dump(data, wf)
+    return
+
+def saveModel(f, data):
     return
 
 def train(latentC, latentT, uCI, uTI):
@@ -41,10 +46,33 @@ def train(latentC, latentT, uCI, uTI):
     weighted_bi, weight_list_bi = e_step(bi_dict, Bi_pred)
     Z_c, Z_t, model, optimizer = m_step(model, optimizer, weighted_adj, features, weighted_bi, latentC, latentT)
 
-    savePickle('weightAdj.list', weight_list)
-    savePickle('weightBi.list', weight_list_bi)
+    now = datetime.datetime.now().strftime('%Y%m%d_%H:%M:%S')
+    model_file_name = f'model_{now}.pth'
+    metapath_adj = f'weightAdj_{now}.adj'
+    metapath_bi = f'weightBi_{now}.bi'
+    weight_f = f'weight_adj.list'
+    weight_bi_f = f'weight_bi.list'
+    company_z = f'companyZ_{now}.list'
+    term_z = f'termZ_{now}.list'
+
+    torch.save(model.state_dict(), f'{temp_folder}/{model_file_name}')
+    addModelFile(model_file_name)
+    addMetapathFile(metapath_adj)
+    addMetapathFile(metapath_bi, flag=False)
+    addLatentFile(company_z)
+    addLatentFile(term_z, flag=False)
+    addCriteriaFile(weight_f)
+    addCriteriaFile(weight_bi_f, flag=False)
+
+    savePickle(company_z, Z_c)
+    savePickle(term_z, Z_t)
+    savePickle(metapath_adj, weighted_adj)
+    savePickle(metapath_bi, weighted_bi)
+    savePickle(metapath_adj, weight_list)
+    savePickle(metapath_bi, weight_list_bi)
     max_cc = list(adj_dict.keys())[weight_list.index(max(weight_list))]
     max_ct = list(bi_dict.keys())[weight_list_bi.index(max(weight_list_bi))]
+    
     return Z_c, Z_t, max_cc, max_ct
 
 def loadBinary(f_name):
@@ -78,9 +106,19 @@ def recommend():
     # bi_dict = loadBinary(f'{temp_folder}/bi0304.dict')
     adj_dict = loadBinary(f'{temp_folder}/adj0122.dict')
     bi_dict = loadBinary(f'{temp_folder}/bi0122-1.dict')
-    adj_weight_list = loadBinary(f'{temp_folder}/weightAdj.list')
-    print(adj_weight_list)
-    bi_weight_list = loadBinary(f'{temp_folder}/weightBi.list')
+    if db.session.query(company_criteria_file.f_name).order_by(desc(company_criteria_file.created_at)).all():
+        f = db.session.query(company_criteria_file.f_name).order_by(
+            desc(company_criteria_file.created_at)).all()[0][0]
+        adj_weight_list = loadBinary(f'{temp_folder}/{f}')
+    else:
+        adj_weight_list = loadBinary(f'{temp_folder}/weightAdj.list')
+    
+    if db.session.query(term_criteria_file.f_name).order_by(desc(term_criteria_file.created_at)).all():
+        f = db.session.query(term_criteria_file.f_name).order_by(
+            desc(term_criteria_file.created_at)).all()[0][0]
+        bi_weight_list = loadBinary(f'{temp_folder}/{f}')
+    else:
+        bi_weight_list = loadBinary(f'{temp_folder}/weightBi.list')
     adj_shape = adj_dict['CPC'].shape
     bi_shape = bi_dict['CPT'].shape
     weighted_adj = weighting(adj_dict, adj_weight_list, adj_shape)

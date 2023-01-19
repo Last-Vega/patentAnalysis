@@ -35,52 +35,124 @@ class Model_file(db.Model):
     __table_args__ = {'extend_existing': True}
     id = db.Column(db.Integer, primary_key=True)
     f_name = db.Column(db.String(1000))
-    timestamp = db.Column(Timestamp)
+    created_at = db.Column(Timestamp)
 
     def to_dict(self):
         return dict(
             id=self.id,
-            text=self.f_name,
-            number=self.timestamp
+            f_name=self.f_name,
+            created_at=self.created_at
         )
 
     def __repr__(self):
-        return '<model %r>' % self.id
+        return '<model %r, %r>' % self.id, self.f_name
 
 
 # meta-pathの重みのファイル名を保存する
-class Metapath_file(db.Model):
-    __tablename__ = 'metapathfiles'
+class Metapath_Adj_file(db.Model):
+    __tablename__ = 'adjfiles'
     __table_args__ = {'extend_existing': True}
     id = db.Column(db.Integer, primary_key=True)
     f_name = db.Column(db.String(1000))
-    timestamp = db.Column(Timestamp)
+    created_at = db.Column(Timestamp)
 
     def to_dict(self):
         return dict(
             id=self.id,
-            text=self.f_name,
-            number=self.timestamp
+            f_name=self.f_name,
+            created_at=self.created_at
         )
 
     def __repr__(self):
-        return '<metapath %r, %r, %r>' % self.id
+        return '<adj %r, %r>' % self.id, self.f_name
+
+# meta-pathの重みのファイル名を保存する
+class Metapath_Bi_file(db.Model):
+    __tablename__ = 'bifiles'
+    __table_args__ = {'extend_existing': True}
+    id = db.Column(db.Integer, primary_key=True)
+    f_name = db.Column(db.String(1000))
+    created_at = db.Column(Timestamp)
+
+    def to_dict(self):
+        return dict(
+            id=self.id,
+            f_name=self.f_name,
+            created_at=self.created_at
+        )
+
+    def __repr__(self):
+        return '<bi %r, %r>' % self.id, self.f_name
+
+# meta-pathの重みのファイル名を保存する
+class company_criteria_file(db.Model):
+    __tablename__ = 'companycriteria'
+    __table_args__ = {'extend_existing': True}
+    id = db.Column(db.Integer, primary_key=True)
+    f_name = db.Column(db.String(1000))
+    created_at = db.Column(Timestamp)
+
+    def to_dict(self):
+        return dict(
+            id=self.id,
+            f_name=self.f_name,
+            created_at=self.created_at
+        )
+
+    def __repr__(self):
+        return '<adj %r, %r>' % self.id, self.f_name
+
+# meta-pathの重みのファイル名を保存する
+class term_criteria_file(db.Model):
+    __tablename__ = 'term_criteria'
+    __table_args__ = {'extend_existing': True}
+    id = db.Column(db.Integer, primary_key=True)
+    f_name = db.Column(db.String(1000))
+    created_at = db.Column(Timestamp)
+
+    def to_dict(self):
+        return dict(
+            id=self.id,
+            f_name=self.f_name,
+            created_at=self.created_at
+        )
+
+    def __repr__(self):
+        return '<bi %r, %r>' % self.id, self.f_name
 
 
 # 潜在表現のファイル名を保存する
-class Latent_file(db.Model):
-    __tablename__ = 'latentfiles'
+class Latent_company_file(db.Model):
+    __tablename__ = 'companyfiles'
     __table_args__ = {'extend_existing': True}
     id = db.Column(db.Integer, primary_key=True)
     f_name = db.Column(db.String(1000))
-    timestamp = db.Column(Timestamp)
+    created_at = db.Column(Timestamp)
 
     def to_dict(self):
         return dict(
             id=self.id,
-            text=self.f_name,
-            number=self.timestamp
+            f_name=self.f_name,
+            created_at=self.created_at
         )
 
     def __repr__(self):
-        return '<metapath %r, %r, %r>' % self.id
+        return '<company %r, %r>' % self.id, self.f_name
+
+
+class Latent_term_file(db.Model):
+    __tablename__ = 'termfiles'
+    __table_args__ = {'extend_existing': True}
+    id = db.Column(db.Integer, primary_key=True)
+    f_name = db.Column(db.String(1000))
+    created_at = db.Column(Timestamp)
+
+    def to_dict(self):
+        return dict(
+            id=self.id,
+            f_name=self.f_name,
+            created_at=self.created_at
+        )
+
+    def __repr__(self):
+        return '<term %r, %r>' % self.id, self.f_name

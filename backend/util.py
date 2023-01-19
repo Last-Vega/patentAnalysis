@@ -2,6 +2,8 @@ import numpy as np
 from scipy.spatial import distance
 import pickle
 import json
+from .table import *
+import datetime
 
 from . import app
 temp_folder = app.config['TEMP_FOLDER']
