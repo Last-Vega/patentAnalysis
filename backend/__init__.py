@@ -11,12 +11,11 @@ app.config.from_object('backend.config.BaseConfig')
 
 
 from .table import db
-# init_create()
 db.drop_all()
 db.create_all()
 
-from .seeding import seed
-seed()
+# from .seeding import seed
+# seed()
 
 from flask_jwt_extended import JWTManager
 app.config['JWT_SECRET_KEY'] = 'seecret'

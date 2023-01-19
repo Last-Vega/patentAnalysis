@@ -22,15 +22,18 @@
         </v-list>
       </v-container>
     </v-navigation-drawer>
-    <v-app-bar color="primary" dark app clipped-left>
-    <v-app-bar-nav-icon @click="drawer=!drawer">
 
+    <v-app-bar color="primary" dark app absolute clipped-left>
+
+      <v-app-bar-nav-icon @click="drawer=!drawer">
       </v-app-bar-nav-icon>
+
         <v-toolbar-title>
           特許データ分析
         </v-toolbar-title>
       <v-spacer></v-spacer>
     </v-app-bar>
+
     <v-main>
       <router-view />
     </v-main>

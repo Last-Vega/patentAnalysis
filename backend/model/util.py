@@ -1,3 +1,4 @@
+from .. import app
 from scipy.sparse.csr import csr_matrix
 from scipy.sparse.lil import lil_matrix
 import torch
@@ -8,11 +9,15 @@ import numpy as np
 from scipy.spatial import distance
 from .preprocessing import *
 import codecs
+from ..table import *
+import datetime
+import pickle
 
 from .args import *
 from .model import Recommendation, RecommendViaFeedback
 torch.set_default_tensor_type('torch.cuda.FloatTensor')
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+temp_folder = app.config['TEMP_FOLDER']
 # 乱数シード固定（再現性の担保）
 def fix_seed(seed):
     # pytorch
@@ -159,3 +164,79 @@ def criteria(adj_dict, updateList, latentData):
             for key, adjOrig in adj_dict.items():
                 adj_dict[key][closeIndex] += 1
     return adj_dict
+
+
+# def savePickle(f, data):
+#     with open(f'{temp_folder}/{f}', 'wb') as wf:
+#         pickle.dump(data, wf)
+#     return
+
+def addLatentFile(file_name, flag=True):
+    if flag:
+        add_data = [
+            Latent_company_file(
+                f_name=file_name,
+                created_at=datetime.datetime.now()
+            )
+        ]
+    else:
+        add_data = [
+            Latent_term_file(
+                f_name=file_name,
+                created_at=datetime.datetime.now()
+            )
+        ]
+    db.session.add_all(add_data)
+    db.session.commit()
+    return
+
+
+def addMetapathFile(file_name, flag=True):
+    if flag:
+        add_data = [
+            Metapath_Adj_file(
+                f_name=file_name,
+                created_at=datetime.datetime.now()
+            )
+        ]
+    else:
+        add_data = [
+            Metapath_Bi_file(
+                f_name=file_name,
+                created_at=datetime.datetime.now()
+            )
+        ]
+    db.session.add_all(add_data)
+    db.session.commit()
+    return
+
+
+def addCriteriaFile(file_name, flag=True):
+    if flag:
+        add_data = [
+            company_criteria_file(
+                f_name=file_name,
+                created_at=datetime.datetime.now()
+            )
+        ]
+    else:
+        add_data = [
+            term_criteria_file(
+                f_name=file_name,
+                created_at=datetime.datetime.now()
+            )
+        ]
+    db.session.add_all(add_data)
+    db.session.commit()
+    return
+
+def addModelFile(file_name):
+    add_data = [
+        Model_file(
+            f_name=file_name,
+            created_at=datetime.datetime.now()
+        )
+    ]
+    db.session.add_all(add_data)
+    db.session.commit()
+    return

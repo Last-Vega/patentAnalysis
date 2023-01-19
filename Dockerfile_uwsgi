@@ -13,6 +13,8 @@ COPY . /app
 # RUN pip install scipy
 # RUN pip install networkx
 
+RUN conda config --set channel_priority false
+RUN conda update --all
 RUN conda install uwsgi
 RUN pip install -r requirements.txt
 
