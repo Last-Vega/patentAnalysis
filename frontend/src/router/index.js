@@ -3,6 +3,8 @@ import VueRouter from 'vue-router'
 import LatentSpace from '../views/LatentSpace.vue'
 import Compare from '../views/Compare.vue'
 import svgSample from '../views/svgSample.vue'
+import activeLearning from '../views/activeLearning.vue'
+
 Vue.use(VueRouter)
 
 const routes = [
@@ -20,6 +22,11 @@ const routes = [
     path: '/svg',
     name: 'svg',
     component: svgSample
+  },
+  {
+    path: '/al',
+    name: 'activeLearning',
+    component: activeLearning
   }
 
 ]
