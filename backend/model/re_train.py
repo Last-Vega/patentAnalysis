@@ -50,8 +50,8 @@ def train(latentC, latentT, uCI, uTI):
     model_file_name = f'model_{now}.pth'
     metapath_adj = f'weightAdj_{now}.adj'
     metapath_bi = f'weightBi_{now}.bi'
-    weight_f = f'weight_adj.list'
-    weight_bi_f = f'weight_bi.list'
+    weight_f = f'weight_adj{now}.list'
+    weight_bi_f = f'weight_bi{now}.list'
     company_z = f'companyZ_{now}.list'
     term_z = f'termZ_{now}.list'
 
@@ -68,8 +68,10 @@ def train(latentC, latentT, uCI, uTI):
     savePickle(term_z, Z_t)
     savePickle(metapath_adj, weighted_adj)
     savePickle(metapath_bi, weighted_bi)
-    savePickle(metapath_adj, weight_list)
-    savePickle(metapath_bi, weight_list_bi)
+    # savePickle(metapath_adj, weight_list)
+    # savePickle(metapath_bi, weight_list_bi)
+    savePickle(weight_f, weight_list)
+    savePickle(weight_bi_f, weight_list_bi)
     max_cc = list(adj_dict.keys())[weight_list.index(max(weight_list))]
     max_ct = list(bi_dict.keys())[weight_list_bi.index(max(weight_list_bi))]
     

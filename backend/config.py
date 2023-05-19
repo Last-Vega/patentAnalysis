@@ -2,6 +2,7 @@ import os
 class BaseConfig(object):
     DEBUG = True
     TEMP_FOLDER = "/app/backend/temp"
+    PREDICTION_FOLDER = "/app/backend/forprediction/data"
     SQLALCHEMY_DATABASE_URI = 'postgresql+psycopg2://{user}:{password}@{host}/{db_name}'.format(**{
         'user': os.environ.get("DATABASE_USER"),
         'password': os.environ.get("DATABASE_PASSWORD"),

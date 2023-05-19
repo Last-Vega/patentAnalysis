@@ -7,9 +7,11 @@ import numpy as np
 from .model.re_train import train, recommend, vstrain
 from .model.train import initialTrain
 from .util import calcCCDistance, calcCTDistance, calcTTDistance, appendElm, calcCTDistanceForRecommend, loadBinary, appendElmForRecommend, loadBinary
+from .forprediction.predict import *
 # coding: utf-8
 from . import app
 temp_folder = app.config['TEMP_FOLDER']
+prediction_folder = app.config['PREDICTION_FOLDER']
 api = Blueprint('api', __name__)
 
 # @api.route('/initial', methods=['POST'])
@@ -131,8 +133,14 @@ def vsupdate():
 
 @api.route('/printadj', methods=['POST'])
 def print_adj():
-    adj = loadBinary(f'{temp_folder}/W_adj0122.adj')
-    result = {'adj': adj.toarray().tolist()}
+    # adj = loadBinary(f'{temp_folder}/W_adj1213.adj')
+    # result = {'adj': adj.toarray().tolist()}
+    # result = jsonify(result)
+    # adj = loadBinary(f'{temp_folder}/adj0123.dict')
+    # result = {'adj': len(adj['CPC'].tolist())}
+    # result = jsonify(result)
+    adj = loadBinary(f'{temp_folder}/bi0122-1.dict')
+    result = {'adj': len(adj['CPT'].tolist())}
     result = jsonify(result)
     return result
 
@@ -177,4 +185,46 @@ def view_new_latent():
 
     result = {'companyInfo':company_info, 'termInfo':term_info, 'flag':True}
     return jsonify(result)
-    
+
+
+@api.route('/predict', methods=['POST'])
+def predict_app():
+    """
+    input: company_name, term_name
+    output: recommendable items
+    """
+    company_name:list = request.get_json()['company']
+    # term:list = request.get_json()['term']
+    recommendable_items = prediction(company_name)
+    result = {'recommendable_items': recommendable_items}
+
+    return jsonify(result)
+    # return 'success'
+
+@api.route('/getCompanyName', methods=['POST'])
+def get_company_name():
+    company_node = loadBinary(f'{prediction_folder}/company_node.pkl')
+    company_list = []
+    for node in company_node:
+        if node == '株式会社熊谷組':
+            continue
+        else:
+            _ = {}
+            _['company'] = node
+            company_list.append(_)
+    result = {'companyList': company_list}
+    return jsonify(result)
+
+
+@api.route('/deldb', methods=['POST'])
+def del_db():
+    db.drop_all()
+    db.create_all()
+    return 'success'
+
+@api.route('/debug', methods=['POST'])
+def debug():
+    from .model.input_data import f_name, adj
+
+    result = {'f_name': f_name, 'adj': str(type(adj))}
+    return jsonify(result)

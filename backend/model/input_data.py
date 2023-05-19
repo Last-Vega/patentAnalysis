@@ -15,7 +15,10 @@ def loadBinary(f_name:str) -> csr_matrix:
     return adj
 
 def createFeatures(adj:csr_matrix) -> lil_matrix:
-    n = adj.shape[0]
+    if type(adj) == list:
+        n = len(adj)
+    else:
+        n = adj.shape[0]
 
     features = np.zeros((n, n))
     for i in range(n):

@@ -10,9 +10,9 @@ app = Flask(__name__,
 app.config.from_object('backend.config.BaseConfig')
 
 
-from .table import db
-db.drop_all()
-db.create_all()
+# from .table import db
+# db.drop_all()
+# db.create_all()
 
 # from .seeding import seed
 # seed()
