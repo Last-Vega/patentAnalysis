@@ -4,6 +4,7 @@ import LatentSpace from '../views/LatentSpace.vue'
 import Compare from '../views/Compare.vue'
 import svgSample from '../views/svgSample.vue'
 import activeLearning from '../views/activeLearning.vue'
+import collaboration from '../views/collaboration.vue'
 
 Vue.use(VueRouter)
 
@@ -27,6 +28,11 @@ const routes = [
     path: '/al',
     name: 'activeLearning',
     component: activeLearning
+  },
+  {
+    path: '/collaboration',
+    name: 'collaboration',
+    component: collaboration
   }
 
 ]

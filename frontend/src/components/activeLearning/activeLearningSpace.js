@@ -35,14 +35,14 @@ const chartOptions = {
     }
   },
   xAxis: {
-    min: -1,
-    max: 1,
+    // min: -1,
+    // max: 1,
     gridLineWidth: 1,
     tickPixelInterval: 25
   },
   yAxis: {
-    min: -1,
-    max: 1,
+    // min: -1,
+    // max: 1,
     tickPixelInterval: 50
   },
   legend: {
