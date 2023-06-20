@@ -35,14 +35,47 @@
             </caption>
             <thead>
               <tr>
+                <th class="text-left">Caption</th>
                 <th class="text-left">Term</th>
               </tr>
             </thead>
             <tbody>
-              <tr
+              <!-- <tr
                 v-for="(term, index) in predictedTerm"
                 :key="index"
                 >
+                <td>{{ term }}</td>
+              </tr> -->
+              <tr
+                v-for="(term, index) in t1.term"
+                :key="index"
+                :style="{'background-color': t1.color}"
+                >
+                <td>◯(熊谷組)(他社)</td>
+                <td>{{ term }}</td>
+              </tr>
+              <tr
+                v-for="(term, index) in t2.term"
+                :key="index"
+                :style="{'background-color': t2.color}"
+                >
+                <td>熊谷組のみ保有</td>
+                <td>{{ term }}</td>
+              </tr>
+              <tr
+                v-for="(term, index) in t3.term"
+                :key="index"
+                :style="{'background-color': t3.color}"
+                >
+                <td>他社のみ保有</td>
+                <td>{{ term }}</td>
+              </tr>
+              <tr
+                v-for="(term, index) in t4.term"
+                :key="index"
+                :style="{'background-color': t4.color}"
+                >
+                <td>×(熊谷組)(他社)</td>
                 <td>{{ term }}</td>
               </tr>
             </tbody>
@@ -95,7 +128,11 @@ export default {
       companyName: [],
       search: '',
       selected: [],
-      predictedTerm: [],
+      // predictedTerm: [],
+      t1: [],
+      t2: [],
+      t3: [],
+      t4: [],
       isShow: false,
       dialog: false
     }
@@ -123,6 +160,7 @@ export default {
       const params = {
         company: data
       }
+      console.log(params)
       this.isShow = true
       await this.$api
         .post(path, params)
@@ -132,7 +170,13 @@ export default {
           //   name: 'Prediction',
           //   params: { prediction: response.data }
           // })
-          this.predictedTerm = response.data.recommendable_items
+          // this.predictedTerm = response.data.recommendable_items
+          this.t1 = response.data.t1
+          this.t2 = response.data.t2
+          this.t3 = response.data.t3
+          this.t4 = response.data.t4
+          // selectedを初期化
+          this.selected.splice(0, this.selected.length)
           this.isShow = false
         })
         .catch(error => {
