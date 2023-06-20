@@ -4,7 +4,7 @@ from scipy.sparse import csr_matrix, lil_matrix
 from .args import *
 import os
 from .util import fix_seed, prepare_adj_for_training, prepare_features_for_training, model_init
-import cupy as cp
+# import cupy as cp
 
 # from input_data import adj, features, bi_adj
 from .. import app
@@ -13,8 +13,8 @@ temp_folder = app.config['TEMP_FOLDER']
 torch.set_default_tensor_type('torch.cuda.FloatTensor')
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 # print(device)
-pool = cp.cuda.MemoryPool(cp.cuda.malloc_managed)
-cp.cuda.set_allocator(pool.malloc)
+# pool = cp.cuda.MemoryPool(cp.cuda.malloc_managed)
+# cp.cuda.set_allocator(pool.malloc)
 
 def weighting(dict, list, size):
     weighted_adj = torch.zeros((size[0],size[1]))
