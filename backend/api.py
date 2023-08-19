@@ -195,14 +195,15 @@ def predict_app():
     """
     company_name:list = request.get_json()['company']
     # term:list = request.get_json()['term']
-    recommendable_items = prediction(company_name)
-    has_kumagai_has_others, has_kumagai_doesnt_have_others, doesnt_have_kumagai_has_others, doesnt_have_kumagai_doesnt_have_others = eval(company_name, recommendable_items)
+    # recommendable_items, z_c, z_t = prediction(company_name)
+    # has_kumagai_has_others, has_kumagai_doesnt_have_others, doesnt_have_kumagai_has_others, doesnt_have_kumagai_doesnt_have_others = eval(company_name, recommendable_items)
 
-    result = {  't1':{'term':has_kumagai_has_others, 'color':'#fff'},
-                't2':{'term':has_kumagai_doesnt_have_others, 'color':'#6b3680'},
-                't3':{'term':doesnt_have_kumagai_has_others, 'color':'#365280'},
-                't4':{'term':doesnt_have_kumagai_doesnt_have_others, 'color':'#803e36'}
+    company_info, term_info = prediction(company_name)
+
+    result = {  'companyInfo': company_info,
+                'termInfo': term_info 
             }
+    
     # result = {'recommendable_items': recommendable_items}
 
     return jsonify(result)

@@ -3,9 +3,6 @@ import torch.nn as nn
 import torch.nn.functional as F
 import os
 import numpy as np
-# from torch_geometric.nn import GCNConv, Linear, to_hetero
-
-# from args import *
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 if torch.cuda.is_available():
@@ -89,11 +86,13 @@ class MLP(nn.Module):
 		self.bipartite_dim = bipartite_dim
 		self.hidden1_dim = hidden1_dim
 		self.hidden2_dim = hidden2_dim
-		self.l1 = nn.Linear(bipartite_dim, hidden1_dim)
-		self.l21 = nn.Linear(hidden1_dim, hidden2_dim) # for mu layer
-		self.l22 = nn.Linear(hidden1_dim, hidden2_dim) # for sigma layer
-		self.dropout = dropout
+		self.fc1 = nn.Linear(bipartite_dim, hidden1_dim)
+		self.fc21 = nn.Linear(hidden1_dim, hidden2_dim) # for mu layer
+		self.fc22 = nn.Linear(hidden1_dim, hidden2_dim) # for sigma layer
+		self.dropout = nn.Dropout(dropout)
+		self.bn1 = nn.BatchNorm1d(hidden1_dim)
 	
+		
 	def reparameterize(self, mu, logvar):
 		if self.training:
 			std = torch.exp(logvar)
@@ -103,13 +102,14 @@ class MLP(nn.Module):
 			return mu
 	
 	def forward(self, bi_network):
-		h1 = self.l1(bi_network)
-		h1 = F.relu(h1)
-		self.mu = self.l21(h1)
-		self.sigma = self.l22(h1)
-		z = self.reparameterize(self.mu, self.sigma)
-		return z, self.mu, self.sigma
-
+		h1 = F.relu(self.fc1(bi_network))
+		h1 = self.bn1(h1)
+		h1 = self.dropout(h1)
+		mu = self.fc21(h1)
+		logvar = self.fc22(h1)
+		z = self.reparameterize(mu, logvar)
+		return z, mu, logvar
+	
 	def __repr__(self):
 		return self.__class__.__name__ + ' (' \
 			+ str(self.bipartite_dim) + ' ->' \
@@ -130,6 +130,8 @@ class HeteroVGAE(nn.Module):
 		self.mlp = MLP(bipartite_dim, hidden1_dim, hidden2_dim, dropout)
 		self.decoder = EdgeDecoder(dropout)
 		self.dropout = dropout
+		self.alpha = nn.Parameter(torch.FloatTensor(1).to(device), requires_grad=True)
+		nn.init.constant_(self.alpha, 100)
 
 
 	def encode(self, X, adj):
@@ -152,8 +154,28 @@ class HeteroVGAE(nn.Module):
 		else:
 			return mu
 	
+	def regularization_loss(self, z_c, z_t, users_zc):
+		z_c = z_c.to(device)
+		# z_t = z_t.to(device)
+		users_zc = users_zc.to(device)
+		# users_zt = users_zt.to(device)
+		eps = 1e-8
+		distance_cc = torch.cdist(z_c,z_c, p=2)
+		# distance_ct = torch.cdist(z_c,z_t, p=2)
+
+		distance_ucc = torch.cdist(users_zc,users_zc, p=2)
+		# distance_uct = torch.cdist(users_zc,users_zt, p=2)
+
+		diff1 = distance_cc - distance_ucc
+		# diff2 = distance_ct - distance_uct
+		
+		# regularization = torch.sum(diff1**2) + torch.sum(diff2**2)
+		regularization = torch.sum(diff1**2)
+		return regularization
+		
 	
-	def loss_function(self, norm, norm_bi, adj_label, bi_network_label, A_pred, bipartite_pred, weight_tensor, weight_tensor_bi):
+	
+	def loss_function(self, norm, norm_bi, adj_label, bi_network_label, A_pred, bipartite_pred, weight_tensor, weight_tensor_bi, users_zc):
 		# Reconstruction loss
 		eps = 1e-8
 
@@ -163,8 +185,11 @@ class HeteroVGAE(nn.Module):
 		# KL divergence loss
 		KLD1 = -0.5/A_pred.size(0) * torch.sum(1 + self.logstd - self.mean.pow(2) - self.logstd.exp())
 		KLD2 = -0.5/bipartite_pred.size(0) * torch.sum(1 + self.sigma - self.mu.pow(2) - self.sigma.exp())
+
+		# Regularization loss
+		regularization = self.regularization_loss(self.z_c, self.z_t, users_zc)
 		
-		loss = recon_loss1 + recon_loss2 + KLD1 + KLD2
+		loss = recon_loss1 + recon_loss2 + KLD1 + KLD2 + self.alpha * regularization
 		
 		return loss
 	

@@ -2,15 +2,9 @@ from typing import List, Tuple, Dict, Any, Union
 import pickle
 import torch
 import networkx as nx
-# from matplotlib import pyplot as plt
 import numpy as np
 import scipy.sparse as sp
 from scipy.sparse import coo_matrix, csr_matrix, lil_matrix, vstack, hstack
-# import torch_geometric
-# from torch_geometric.utils import to_networkx
-# from preprocessing import *
-# from torch_geometric.data import HeteroData
-# from torch_geometric.utils import to_networkx, to_dense_adj, negative_sampling
 from sklearn.metrics import roc_auc_score, average_precision_score
 
 if torch.cuda.is_available():
@@ -46,52 +40,6 @@ def fix_seed(seed=42)->None:
     torch.backends.cudnn.benchmark = False
     return 
 
-# def check_graph(data: torch_geometric.data.Data)->None:
-#     '''グラフ情報を表示'''
-#     print("グラフ構造:", data)
-#     print("グラフのキー: ", data.keys)
-#     print("ノード数:", data.num_nodes)
-#     print("エッジ数:", data.num_edges)
-#     print("ノードの特徴量数:", data.num_node_features)
-#     print("孤立したノードの有無:", data.contains_isolated_nodes())
-#     print("自己ループの有無:", data.contains_self_loops())
-#     print("====== ノードの特徴量:x ======")
-#     print(data['x'])
-#     print("====== ノードのクラス:y ======")
-#     print(data['y'])
-#     print("========= エッジ形状 =========")
-#     print(data['edge_index'])
-#     return None
-
-# def view_graph(data: torch_geometric.data.Data):
-#     # networkxのグラフに変換
-#     nxg = to_networkx(data)
-
-#     # 可視化のためのページランク計算
-#     pr = nx.pagerank(nxg)
-#     pr_max = np.array(list(pr.values())).max()
-
-#     # 可視化する際のノード位置
-#     draw_pos = nx.spring_layout(nxg, seed=0)
-
-#     # ノードの色設定
-#     cmap = plt.get_cmap('tab10')
-#     labels = data.y.numpy()
-#     colors = [cmap(l) for l in labels]
-
-#     # 図のサイズ
-#     plt.figure(figsize=(10, 10))
-
-#     # 描画
-#     nx.draw_networkx_nodes(nxg,
-#                         draw_pos,
-#                         node_size=[v / pr_max * 1000 for v in pr.values()],
-#                         node_color=colors, alpha=0.5)
-#     nx.draw_networkx_edges(nxg, draw_pos, arrowstyle='-', alpha=0.2)
-#     nx.draw_networkx_labels(nxg, draw_pos, font_size=10)
-
-#     plt.title('KarateClub')
-#     plt.show()
 
 def clamp(data: torch.Tensor, min: float, max: float)->torch.Tensor:
     """
@@ -127,6 +75,42 @@ def preprocess_graph(adj):
     adj_normalized = adj_.dot(degree_mat_inv_sqrt).transpose().dot(degree_mat_inv_sqrt).tocoo()
     return sparse_to_tuple(adj_normalized)
 
+def normalize_adj(adj, flag=True):
+    if flag:
+        adj = sp.coo_matrix(adj)
+        # adj = adj + 1e-8 * sp.eye(adj.shape[0])
+        rowsum = np.array(adj.sum(1))
+        print(rowsum)
+        degree_mat_inv_sqrt = sp.diags(np.power(rowsum, -0.5).flatten())
+        adj_normalized = adj.dot(degree_mat_inv_sqrt).transpose().dot(degree_mat_inv_sqrt).tocoo()
+    else:
+        adj = sp.coo_matrix(adj)
+        rowsum = np.array(adj.sum(1))
+        colsum = np.array(adj.sum(0))
+        degree_mat_inv_sqrt_row = sp.diags(np.power(rowsum, -0.5).flatten())
+        degree_mat_inv_sqrt_col = sp.diags(np.power(colsum, -0.5).flatten())
+        adj_normalized = adj.dot(degree_mat_inv_sqrt_col).transpose().dot(degree_mat_inv_sqrt_row).tocoo()
+
+    adj_norm = sparse_to_tuple(adj_normalized)
+    adj_norm = torch.sparse.FloatTensor(torch.LongTensor(adj_norm[0].T), 
+                                torch.FloatTensor(adj_norm[1]), 
+                                torch.Size(adj_norm[2]))
+    return adj_norm
+
+
+def preprocess_graph_for_bipartite(adj):
+    """
+    二部グラフの隣接行列を次数行列を用いて正規化する
+    """
+    adj = sp.coo_matrix(adj)
+    # adj_ = adj + sp.eye(adj.shape[0])
+    rowsum = np.array(adj.sum(1))
+    colsum = np.array(adj.sum(0))
+    degree_mat_inv_sqrt_row = sp.diags(np.power(rowsum, -0.5).flatten())
+    degree_mat_inv_sqrt_col = sp.diags(np.power(colsum, -0.5).flatten())
+    adj_normalized = adj.dot(degree_mat_inv_sqrt_col).transpose().dot(degree_mat_inv_sqrt_row).tocoo()
+    return sparse_to_tuple(adj_normalized)
+
 def prepare_adj_for_training(adj: csr_matrix)->tuple:
     """
     学習のために，隣接行列を正規化・ラベル付けする
@@ -160,13 +144,17 @@ def prepare_biadj_for_training(adj: csr_matrix)->tuple:
     adj: csr_matrix
     """
     # Store original adjacency matrix (without diagonal entries) for later
+    adj_norm = preprocess_graph_for_bipartite(adj)
     pos_weight = float(adj.shape[0] * adj.shape[0] - adj.sum()) / adj.sum()
     norm = adj.shape[0] * adj.shape[0] / float((adj.shape[0] * adj.shape[0] - adj.sum()) * 2)
 
     adj_label = adj
     adj_label = sparse_to_tuple(adj_label)
-
-    # print(adj_label[1][adj_label[1] == 1].shape)
+    
+    adj_norm = torch.sparse.FloatTensor(torch.LongTensor(adj_norm[0].T), 
+                                torch.FloatTensor(adj_norm[1]), 
+                                torch.Size(adj_norm[2]))
+    
     adj_label = torch.sparse.FloatTensor(torch.LongTensor(adj_label[0].T), 
                                 torch.FloatTensor(adj_label[1]), 
                                 torch.Size(adj_label[2]))
@@ -174,7 +162,7 @@ def prepare_biadj_for_training(adj: csr_matrix)->tuple:
     weight_tensor = torch.ones(weight_mask.size(0)) 
     weight_tensor[weight_mask] = pos_weight
 
-    return adj_label, norm, weight_tensor
+    return adj_norm, adj_label, norm, weight_tensor
 
 def biadj_to_squer_matrix(binary: np.ndarray)->np.ndarray:
     '''二部グラフの隣接行列を正方行列に変換'''

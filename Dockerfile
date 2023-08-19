@@ -1,5 +1,5 @@
 FROM nginx:latest
-FROM nvcr.io/nvidia/pytorch:22.01-py3
+FROM nvcr.io/nvidia/pytorch:22.12-py3
 
 # アプリケーションを配置するディレクトリを確保する
 RUN mkdir /app
