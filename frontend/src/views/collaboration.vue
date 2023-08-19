@@ -24,7 +24,7 @@
       </v-btn>
       </template>
 
-      <v-card>
+      <!-- <v-card>
         <v-card-title class="text-h5 grey lighten-2">
           推薦結果
         </v-card-title>
@@ -40,12 +40,6 @@
               </tr>
             </thead>
             <tbody>
-              <!-- <tr
-                v-for="(term, index) in predictedTerm"
-                :key="index"
-                >
-                <td>{{ term }}</td>
-              </tr> -->
               <tr
                 v-for="(term, index) in t1.term"
                 :key="index"
@@ -93,27 +87,27 @@
             閉じる
           </v-btn>
         </v-card-actions>
-      </v-card>
-</v-dialog>
-  <v-data-table
-          :headers="headers"
-          :items="companyName"
-          item-key="company"
-          class="elevation-1"
-          :search="search"
-          v-model="selected"
-          show-select
-        >
-          <template v-slot:top>
-            <v-text-field
-              v-model="search"
-              label="Search Company Name"
-              class="mx-4"
-            ></v-text-field>
-          </template>
-        </v-data-table>
-</v-container>
-</v-app>
+      </v-card> -->
+    </v-dialog>
+    <v-data-table
+            :headers="headers"
+            :items="companyName"
+            item-key="company"
+            class="elevation-1"
+            :search="search"
+            v-model="selected"
+            show-select
+          >
+            <template v-slot:top>
+              <v-text-field
+                v-model="search"
+                label="Search Company Name"
+                class="mx-4"
+              ></v-text-field>
+            </template>
+    </v-data-table>
+    </v-container>
+  </v-app>
 </template>
 
 <script>
@@ -166,10 +160,10 @@ export default {
         .post(path, params)
         .then(response => {
           console.log(response.data)
-          // this.$router.push({
-          //   name: 'Prediction',
-          //   params: { prediction: response.data }
-          // })
+          this.$router.push({
+            name: 'prediction',
+            params: { responseData: response.data }
+          })
           // this.predictedTerm = response.data.recommendable_items
           this.t1 = response.data.t1
           this.t2 = response.data.t2
