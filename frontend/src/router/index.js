@@ -5,6 +5,7 @@ import Compare from '../views/Compare.vue'
 import svgSample from '../views/svgSample.vue'
 import activeLearning from '../views/activeLearning.vue'
 import collaboration from '../views/collaboration.vue'
+import prediction from '../components/prediction.vue'
 
 Vue.use(VueRouter)
 
@@ -33,6 +34,12 @@ const routes = [
     path: '/collaboration',
     name: 'collaboration',
     component: collaboration
+  },
+  {
+    path: '/prediction',
+    name: 'prediction',
+    component: prediction,
+    props: true
   }
 
 ]
