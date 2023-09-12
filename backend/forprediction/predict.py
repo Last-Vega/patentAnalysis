@@ -128,16 +128,18 @@ def prediction(target_company_list:List)->List[str]:
     
     z_c, z_t = train(model, optimizer, 200, feature, adj_norm, bi_adj_norm, adj_label, biadj_label, norm, norm_bi, weight_tensor, weight_tensor_bi, target_company_index)
     
-    recommended_items = recommendable_items(z_c, z_t, target_company, 100)
-    recommended_items = [term[i] for i in recommended_items]
+    recommended_items_index = recommendable_items(z_c, z_t, target_company, 100)
+    recommended_items = [term[i] for i in recommended_items_index]
 
     z_c = z_c.to('cpu').detach().numpy().copy().tolist()
     z_t = z_t.to('cpu').detach().numpy().copy().tolist()
     
     company_info = []
-    for i in range(len(target_company_index)):
-        company_info.append({'company':company[target_company_index[i]], 'x':z_c[i][0], 'y':z_c[i][1]})
-    term_info = eval(target_company_list, recommended_items, z_t)
+    # for i in range(len(target_company_index)):
+    #     company_info.append({'company':company[target_company_index[i]], 'x':z_c[i][0], 'y':z_c[i][1]})
+    for i in target_company_index:
+        company_info.append({'company':company[i], 'x':z_c[i][0], 'y':z_c[i][1]})
+    term_info = eval(target_company_list, recommended_items, recommended_items_index, z_t)
     return company_info, term_info
 
 def check_term(kumgai_term_index, collaborated_term_index, reccomendable_term_index):
@@ -150,7 +152,7 @@ def check_term(kumgai_term_index, collaborated_term_index, reccomendable_term_in
      else:
         return 't4'
 
-def eval(target_company_list, recommendable_items, z_t):
+def eval(target_company_list, recommendable_items, recommended_items_index, z_t):
 	# term1 -> kumagaigumi
     target_company = company.index('株式会社熊谷組')
     term1 = [term[i] for i in range(len(term)) if cpt[target_company, i] == 1]
@@ -161,11 +163,12 @@ def eval(target_company_list, recommendable_items, z_t):
 
     term1_index = [i for i in range(len(term)) if term[i] in term1]
     term2_index = [i for i in range(len(term)) if term[i] in term2]
-    recommendable_items_index = [i for i in range(len(term)) if term[i] in recommendable_items]
 
     term_info = []
-    for i in range(len(recommendable_items)):
-        term_info.append({'term':term[i], 'color':check_term(term1_index, term2_index, recommendable_items_index[i]), 'x':z_t[i][0], 'y':z_t[i][1]})
+    # for i in range(len(recommendable_items)):
+    #     term_info.append({'term':term[i], 'color':check_term(term1_index, term2_index, recommended_items_index[i]), 'x':z_t[i][0], 'y':z_t[i][1]})
+    for i in recommended_items_index:
+        term_info.append({'term':term[i], 'color':check_term(term1_index, term2_index, i), 'x':z_t[i][0], 'y':z_t[i][1]})
     return term_info
 
 
