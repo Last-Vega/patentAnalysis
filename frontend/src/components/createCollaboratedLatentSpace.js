@@ -67,7 +67,7 @@ const chartOptions = {
       animation: false
     },
     {
-      name: '他者のみ言及',
+      name: '他社のみ言及',
       data: [],
       dataLabal: [],
       type: 'scatter',
@@ -75,6 +75,13 @@ const chartOptions = {
     },
     {
       name: '両方言及なし',
+      data: [],
+      dataLabal: [],
+      type: 'scatter',
+      animation: false
+    },
+    {
+      name: '1文書中に20回以上登場している場合に言及しているとみなす',
       data: [],
       dataLabal: [],
       type: 'scatter',
