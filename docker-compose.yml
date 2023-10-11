@@ -3,7 +3,6 @@ services:
   frontend:
     build:
       context: .
-      # dockerfile: Dockerfile_vue
       dockerfile: Dockerfile_nginx
     container_name: "kumagai_front"
     volumes:
@@ -14,32 +13,9 @@ services:
     # 本番環境のサーバーで使用
     ports:
       - "80:80"
-    # depends_on:
-    #   - backend
     depends_on:
       - uwsgi
     stdin_open: true
-
-  # backend:
-  #   build:
-  #     context: .
-  #     dockerfile: Dockerfile_flask
-  #   container_name: "kumagai_back"
-  #   volumes:
-  #     - "./:/app"
-  #     - "/app/.vscode"
-  #     - "/app/.idea"
-  #   ports:
-  #     - "5000:5000"
-    
-  #   runtime: nvidia
-  #   environment:
-  #     NVIDIA_VISIBLE_DEVICES: all
-  #     NVIDIA_DRIVER_CAPABILITIES: all
-  #   stdin_open: true
-  #   tty: true
-  #   depends_on:
-  #     - uwsgi
 
   postgres:
     image: postgres

@@ -6,6 +6,7 @@ import svgSample from '../views/svgSample.vue'
 import activeLearning from '../views/activeLearning.vue'
 import collaboration from '../views/collaboration.vue'
 import prediction from '../components/prediction.vue'
+import NotFoundComponent from '../components/NotFoundComponent'
 
 Vue.use(VueRouter)
 
@@ -40,6 +41,11 @@ const routes = [
     name: 'prediction',
     component: prediction,
     props: true
+  },
+  {
+    path: '*',
+    component: NotFoundComponent,
+    name: 'NotFound'
   }
 
 ]

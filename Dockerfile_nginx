@@ -1,6 +1,9 @@
 ##### 本番環境 #####
 # FROM nginx:1.13.12-alpine as production-stage
-FROM nginx
+# FROM nginx
+FROM ubuntu:22.04
+RUN apt-get update \
+    && apt-get install -y nodejs npm nginx
 
 # WORKDIR /app
 # contentsを配置するディレクトリを作成する
