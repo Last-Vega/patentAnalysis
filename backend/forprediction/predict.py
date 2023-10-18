@@ -62,7 +62,7 @@ cpt = clamp(torch.matmul(patent_company.T, patent_term), 0, 1).to('cpu')
     
 #     return recommended_items
 
-def train(model, optimizer, epoch, feature, adj_norm, bi_adj_norm, adj_label, biadj_label, norm, norm_bi, weight_tensor, weight_tensor_bi, target_company_index):
+def train(model, optimizer, epoch, feature, adj_norm, bi_adj_norm, adj_label, biadj_label, norm, norm_bi, weight_tensor, weight_tensor_bi, target_company_index, target_company):
     history = {'loss':[], 'acc':[], 'ap':[], 'roc':[]}
 
     model.train()
@@ -73,7 +73,7 @@ def train(model, optimizer, epoch, feature, adj_norm, bi_adj_norm, adj_label, bi
 
         # 28 is kumagaigumi's index
         for i in target_company_index:
-            users_zc[i] = z_c[28]
+            users_zc[i] = z_c[target_company]
         
         optimizer.zero_grad()
 
@@ -88,7 +88,9 @@ def train(model, optimizer, epoch, feature, adj_norm, bi_adj_norm, adj_label, bi
 
 def prediction(target_company_list:List)->List[str]:
     fix_seed()
+    print(target_company_list)
     target_company_index:int = [company.index(c) for c in target_company_list]
+    print(target_company_index)
     target_company_index.append(company.index('株式会社熊谷組'))
 	# 熊谷組's index
     target_company = company.index('株式会社熊谷組')
@@ -126,7 +128,7 @@ def prediction(target_company_list:List)->List[str]:
     print(model)
     optimizer = Adam(model.parameters(), lr=0.01)
     
-    z_c, z_t = train(model, optimizer, 200, feature, adj_norm, bi_adj_norm, adj_label, biadj_label, norm, norm_bi, weight_tensor, weight_tensor_bi, target_company_index)
+    z_c, z_t = train(model, optimizer, 200, feature, adj_norm, bi_adj_norm, adj_label, biadj_label, norm, norm_bi, weight_tensor, weight_tensor_bi, target_company_index, target_company)
     
     recommended_items_index = recommendable_items(z_c, z_t, target_company, 100)
     recommended_items = [term[i] for i in recommended_items_index]

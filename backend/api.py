@@ -7,7 +7,8 @@ import numpy as np
 from .model.re_train import train, recommend, vstrain
 from .model.train import initialTrain
 from .util import calcCCDistance, calcCTDistance, calcTTDistance, appendElm, calcCTDistanceForRecommend, loadBinary, appendElmForRecommend, loadBinary
-from .forprediction.predict import *
+# from .forprediction.predict import *
+from .forprediction.sample import *
 # coding: utf-8
 from . import app
 temp_folder = app.config['TEMP_FOLDER']
@@ -187,24 +188,44 @@ def view_new_latent():
     return jsonify(result)
 
 
+# @api.route('/predict', methods=['POST'])
+# def predict_app():
+#     """
+#     input: company_name, term_name
+#     output: recommendable items
+#     """
+#     company_name:list = request.get_json()['company']
+#     # term:list = request.get_json()['term']
+#     # recommendable_items, z_c, z_t = prediction(company_name)
+#     # has_kumagai_has_others, has_kumagai_doesnt_have_others, doesnt_have_kumagai_has_others, doesnt_have_kumagai_doesnt_have_others = eval(company_name, recommendable_items)
+
+#     company_info, term_info = prediction(company_name)
+
+#     result = {  'companyInfo': company_info,
+#                 'termInfo': term_info 
+#             }
+    
+#     # result = {'recommendable_items': recommendable_items}
+
+#     return jsonify(result)
+#     # return 'success'
+
 @api.route('/predict', methods=['POST'])
 def predict_app():
     """
     input: company_name, term_name
     output: recommendable items
     """
-    company_name:list = request.get_json()['company']
-    # term:list = request.get_json()['term']
-    # recommendable_items, z_c, z_t = prediction(company_name)
-    # has_kumagai_has_others, has_kumagai_doesnt_have_others, doesnt_have_kumagai_has_others, doesnt_have_kumagai_doesnt_have_others = eval(company_name, recommendable_items)
+    
+    target_company:list = request.get_json()['targetCompany']
+    collaborated_company:list = request.get_json()['collaboratedCompany']
 
-    company_info, term_info = prediction(company_name)
+    # company_info, term_info = prediction(company_name)
+    company_info, term_info = prediction(target_company, collaborated_company)
 
     result = {  'companyInfo': company_info,
                 'termInfo': term_info 
             }
-    
-    # result = {'recommendable_items': recommendable_items}
 
     return jsonify(result)
     # return 'success'
@@ -220,6 +241,15 @@ def get_company_name():
             _ = {}
             _['company'] = node
             company_list.append(_)
+    result = {'companyList': company_list}
+    return jsonify(result)
+
+@api.route('/getCompanyNameList', methods=['POST'])
+def get_company_name_list():
+    company_node = loadBinary(f'{prediction_folder}/company_node.pkl')
+    company_list = []
+    for node in company_node:
+        company_list.append(node)
     result = {'companyList': company_list}
     return jsonify(result)
 

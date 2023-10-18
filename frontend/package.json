@@ -8,7 +8,7 @@
     "test:unit": "vue-cli-service test:unit",
     "test:e2e": "vue-cli-service test:e2e",
     "lint": "vue-cli-service lint",
-    "prod-build": "vue-cli-service build --mode production --dest ../dist"
+    "prod-build": "vue-cli-service build --mode production --dest /home/www/contents/dist"
   },
   "dependencies": {
     "axios": "^0.27.2",
