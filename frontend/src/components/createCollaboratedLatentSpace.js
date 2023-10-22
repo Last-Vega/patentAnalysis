@@ -53,28 +53,28 @@ const chartOptions = {
       animation: false
     },
     {
-      name: '両方とも言及',
+      name: '',
       data: [],
       dataLabal: [],
       type: 'scatter',
       animation: false
     },
     {
-      name: '熊谷組のみ言及',
+      name: '',
       data: [],
       dataLabal: [],
       type: 'scatter',
       animation: false
     },
     {
-      name: '他社のみ言及',
+      name: '',
       data: [],
       dataLabal: [],
       type: 'scatter',
       animation: false
     },
     {
-      name: '両方言及なし',
+      name: '',
       data: [],
       dataLabal: [],
       type: 'scatter',

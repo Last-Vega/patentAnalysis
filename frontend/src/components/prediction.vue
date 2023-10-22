@@ -32,10 +32,10 @@
                   両方とも言及
                 </td>
                 <td v-else-if="item.color === 't2'" class="t2">
-                  熊谷組のみ言及
+                  {{targetCompany}}のみ言及
                 </td>
                 <td v-else-if="item.color === 't3'" class="t3">
-                  他社のみ言及
+                  {{selectedCompany}}が言及
                 </td>
                 <td v-else-if="item.color === 't4'" class="t4">
                   両方とも言及しない
@@ -89,7 +89,9 @@ export default {
       isShow: false,
       fromPointName: '',
       toPointName: '',
-      history: []
+      history: [],
+      targetCompany: '',
+      selectedCompany: ''
     }
   },
   methods: {
@@ -201,19 +203,29 @@ export default {
       }
       this.options.series[0].dataLabal = this.companyName
       this.options.series[0].data = this.companyXY
+
       this.options.series[1].dataLabal = this.termName1
       this.options.series[1].data = this.termXY1
+      this.options.series[1].name = '両方とも言及'
+
       this.options.series[2].dataLabal = this.termName2
       this.options.series[2].data = this.termXY2
+      this.options.series[2].name = this.targetCompany + 'のみ言及'
+
       this.options.series[3].dataLabal = this.termName3
       this.options.series[3].data = this.termXY3
+      this.options.series[3].name = this.selectedCompany + 'のみ言及'
+
       this.options.series[4].dataLabal = this.termName4
       this.options.series[4].data = this.termXY4
+      this.options.series[4].name = '両方とも言及しない'
     }
   },
   async created () {
     const companyData = this.responseData.companyInfo
     const termData = this.responseData.termInfo
+    this.targetCompany = this.responseData.targetCompany
+    this.selectedCompany = this.responseData.selectedCompany
     console.log(companyData)
     console.log(termData)
     this.prep(companyData, termData)
