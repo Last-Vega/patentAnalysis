@@ -224,7 +224,9 @@ def predict_app():
     company_info, term_info = prediction(target_company, collaborated_company)
 
     result = {  'companyInfo': company_info,
-                'termInfo': term_info 
+                'termInfo': term_info,
+                'targetCompany': target_company,
+                'selectedCompany': ','.join(collaborated_company)
             }
 
     return jsonify(result)
