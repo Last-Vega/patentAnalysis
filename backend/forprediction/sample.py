@@ -110,7 +110,7 @@ def prediction(target_company:str, collaborated_company_list:List)->List[str]:
     for i in collaborated_company_index:
         company_info.append({'company':company[i], 'x':z_c[i][0], 'y':z_c[i][1]})
     company_info.append({'company':company[target_company_index], 'x':z_c[target_company_index][0], 'y':z_c[target_company_index][1]})
-    term_info = eval(target_company_index, collaborated_company_index, recommended_items, recommended_items_index, z_t)
+    term_info = eval(target_company_index, collaborated_company_index, recommended_items, recommended_items_index, z_t, target_company, collaborated_company_list)
     return company_info, term_info
 
 def check_term(kumgai_term_index, collaborated_term_index, reccomendable_term_index):
@@ -123,7 +123,8 @@ def check_term(kumgai_term_index, collaborated_term_index, reccomendable_term_in
      else:
         return 't4'
 
-def eval(target_company_index, collaborated_company_index, recommendable_items, recommended_items_index, z_t):
+def eval(target_company_index, collaborated_company_index, recommendable_items, recommended_items_index, z_t, target_company, collaborated_company_list):
+
 	# term1 -> kumagaigumi
     term1 = [term[i] for i in range(len(term)) if cpt[target_company_index, i] == 1]
     # term2 -> collaborated_company_list
@@ -138,5 +139,16 @@ def eval(target_company_index, collaborated_company_index, recommendable_items, 
     # for i in range(len(recommendable_items)):
     #     term_info.append({'term':term[i], 'color':check_term(term1_index, term2_index, recommended_items_index[i]), 'x':z_t[i][0], 'y':z_t[i][1]})
     for i in recommended_items_index:
-        term_info.append({'term':term[i], 'color':check_term(term1_index, term2_index, i), 'x':z_t[i][0], 'y':z_t[i][1]})
+        # term_info.append({'term':term[i], 'color':check_term(term1_index, term2_index, i), 'x':z_t[i][0], 'y':z_t[i][1]})
+        color_flag = check_term(term1_index, term2_index, i)
+        if color_flag == 't1':
+            label = f'両方言及'
+        elif color_flag == 't2':
+            label = f'{target_company}のみ言及'
+        elif color_flag == 't3':
+            label = f'{(",").join(collaborated_company_list)}のみ言及'
+        else:
+            label = f'両方言及なし'
+        term_info.append({'term':term[i], 'color':color_flag, 'x':z_t[i][0], 'y':z_t[i][1], 'label':label})
+            
     return term_info
