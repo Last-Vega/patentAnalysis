@@ -74,8 +74,8 @@ class EdgeDecoder(nn.Module):
 
 	def __repr__(self):
 		return self.__class__.__name__ + ' (' \
-			+ ' (z_company: 2->4555)' \
-			+ ' (z_term: 2->4555)' \
+			+ ' (z_company: 2->Num_company)' \
+			+ ' (z_term: 2->Num_term)' \
 		+ ')'
 	
 

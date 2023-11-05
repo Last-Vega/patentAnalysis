@@ -230,7 +230,43 @@ def predict_app():
             }
 
     return jsonify(result)
-    # return 'success'
+
+@api.route('/predict_anlz', methods=['POST'])
+def predict_anlz():
+    """
+    input: company_name, term_name
+    output: recommendable items
+    """
+    
+    target_company:list = request.get_json()['targetCompany']
+    collaborated_company:list = request.get_json()['collaboratedCompany']
+
+    # company_info, term_info = prediction(company_name)
+    company_info, term_info = prediction(target_company, collaborated_company)
+
+    # flagごとに分ける
+    t1, t2, t3, t4 = [], [], [], []
+    for elm in term_info:
+        if elm['color'] == 't1':
+            t1.append(elm['term'])
+        elif elm['color'] == 't2':
+            t2.append(elm['term'])
+        elif elm['color'] == 't3':
+            t3.append(elm['term'])
+        else:
+            t4.append(elm['term'])
+    
+    result = {  
+                'companyInfo': company_info,
+                'targetCompany': target_company,
+                'selectedCompany': ','.join(collaborated_company),
+                't1': t1,
+                't2': t2,
+                't3': t3,
+                't4': t4
+            }
+
+    return jsonify(result)
 
 @api.route('/getCompanyName', methods=['POST'])
 def get_company_name():
@@ -248,7 +284,7 @@ def get_company_name():
 
 @api.route('/getCompanyNameList', methods=['POST'])
 def get_company_name_list():
-    company_node = loadBinary(f'{prediction_folder}/company_node.pkl')
+    company_node = loadBinary(f'{prediction_folder}/new/company_node_new.pkl')
     company_list = []
     for node in company_node:
         company_list.append(node)
