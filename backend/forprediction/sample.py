@@ -21,8 +21,10 @@ FLAG = True # True: new data, False: old data
 if FLAG:
     graph = load_binary(f'{prediction_folder}/new2/bipartite_graph_new.pkl')
     num_company:int = len({n for n, d in graph.nodes(data=True) if d["bipartite"] == 'company'})
-    company:list = list(graph.nodes)[:num_company]
-    term:list = list(graph.nodes)[num_company:]
+    # company:list = list(graph.nodes)[:num_company]
+    # term:list = list(graph.nodes)[num_company:]
+    company:list = load_binary(f'{prediction_folder}/new2/company_node_new.pkl')
+    term:list = load_binary(f'{prediction_folder}/new2/term_node_new.pkl')
 
     # /home/watanabe/patentAnalysis/backend/4prediction
     # load data
@@ -33,8 +35,10 @@ if FLAG:
 else:
     graph = load_binary(f'{prediction_folder}/bipartite_graph.pkl')
     num_company:int = len({n for n, d in graph.nodes(data=True) if d["bipartite"] == 'company'})
-    company:list = list(graph.nodes)[:num_company]
-    term:list = list(graph.nodes)[num_company:]
+    # company:list = list(graph.nodes)[:num_company]
+    # term:list = list(graph.nodes)[num_company:]
+    company:list = load_binary(f'{prediction_folder}/company_node.pkl')
+    term:list = load_binary(f'{prediction_folder}/term_node.pkl')
 
     # /home/watanabe/patentAnalysis/backend/4prediction
     # load data

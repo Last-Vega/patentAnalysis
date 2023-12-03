@@ -29,16 +29,16 @@
                     @change="addUpdateIndex('company', item.dataIndex)" />
                 </td> -->
                 <td v-if="item.color === 't1'" class="t1">
-                  両方とも言及
+                  両方とも多く使用
                 </td>
                 <td v-else-if="item.color === 't2'" class="t2">
-                  {{targetCompany}}のみ言及
+                  {{targetCompany}}のみ多く使用
                 </td>
                 <td v-else-if="item.color === 't3'" class="t3">
-                  {{selectedCompany}}が言及
+                  {{selectedCompany}}が多く使用
                 </td>
                 <td v-else-if="item.color === 't4'" class="t4">
-                  両方とも言及しない
+                  両方ともあまり使用しない
                 </td>
               </tr>
             </tbody>
@@ -206,19 +206,19 @@ export default {
 
       this.options.series[1].dataLabal = this.termName1
       this.options.series[1].data = this.termXY1
-      this.options.series[1].name = '両方とも言及'
+      this.options.series[1].name = '両方とも多く使用'
 
       this.options.series[2].dataLabal = this.termName2
       this.options.series[2].data = this.termXY2
-      this.options.series[2].name = this.targetCompany + 'のみ言及'
+      this.options.series[2].name = this.targetCompany + 'のみ多く使用'
 
       this.options.series[3].dataLabal = this.termName3
       this.options.series[3].data = this.termXY3
-      this.options.series[3].name = this.selectedCompany + 'のみ言及'
+      this.options.series[3].name = this.selectedCompany + 'のみ多く使用'
 
       this.options.series[4].dataLabal = this.termName4
       this.options.series[4].data = this.termXY4
-      this.options.series[4].name = '両方とも言及しない'
+      this.options.series[4].name = '両方ともあまり使用しない'
     }
   },
   async created () {
