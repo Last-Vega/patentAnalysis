@@ -4,6 +4,9 @@
       <div>
         <div class="text-center top-right">
         </div>
+        <div class="eval">
+          ※1文書あたり20回以上使用された単語を，「多く使用」と判定している．
+        </div>
         <highcharts :options="options" ref="chart" class="center"></highcharts>
       </div>
       <v-simple-table dense fixed-header height="800px">
@@ -260,5 +263,10 @@ export default {
 
 .t4 {
   background-color: #8085e9;
+}
+
+.eval{
+  color: yellowgreen;
+  font-size: 20px;
 }
 </style>

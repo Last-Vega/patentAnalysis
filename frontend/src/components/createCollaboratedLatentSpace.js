@@ -79,14 +79,14 @@ const chartOptions = {
       dataLabal: [],
       type: 'scatter',
       animation: false
-    },
-    {
-      name: '1文書中に20回以上登場している場合に言及しているとみなす',
-      data: [],
-      dataLabal: [],
-      type: 'scatter',
-      animation: false
     }
+    // {
+    //   name: '1文書中に20回以上登場している場合に言及しているとみなす',
+    //   data: [],
+    //   dataLabal: [],
+    //   type: 'scatter',
+    //   animation: false
+    // }
   ],
   plotOptions: {
     series: {
